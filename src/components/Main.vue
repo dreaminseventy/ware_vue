@@ -65,8 +65,12 @@
             <el-table-column prop="option" label="操作">
                 <template slot-scope="scope">
                 <el-button size="small" type="primary" @click="showUpdate(scope.row)">编辑</el-button>
-                <el-popconfirm title="真的要删除吗Σ(っ °Д °;)っ？">
-                        <el-button slot="reference" size="small" type="danger" style="margin-left: 10px" @click="deleteUser(scope.row.id)">删除</el-button>
+                    //button包裹在气泡框当中
+                <el-popconfirm title="真的要删除吗Σ(っ °Д °;)っ"
+                               @confirm="deleteUser(scope.row.id)"
+                               style="margin-left: 10px"
+                >
+                        <el-button slot="reference" size="small" type="danger" >删除</el-button>
                 </el-popconfirm>
                 </template>
             </el-table-column>
@@ -392,6 +396,23 @@ export default {
         //删除功能
         deleteUser(id){
             console.log(id)
+            this.$axios.delete(this.$http+'/user/delete?id='+id).then(res=>res.data).then(res=>{
+                //console.log(res)
+                if (res.code===200){
+                    this.$message({
+                        showClose: true,
+                        message: '删除成功( •̀ ω •́ )y',
+                        type: 'success'
+                    });
+                    this.loadGet()
+                }else {
+                    this.$message({
+                        showClose: true,
+                        message: '删除失败，请重试(╯‵□′)╯︵┻━┻',
+                        type: 'danger'
+                    });
+                }
+            })
         },
         //主要查询（使用get查询全部数据,包含分页查询）
         loadGet(){
@@ -413,6 +434,11 @@ export default {
         //上方选择查询(使用post传递json数据对象，包含分页)
         loadPost(){
             if (this.name===''&&this.sex===''&&this.account===''){
+                this.$message({
+                    showClose: true,
+                    message: '搜索栏为空，请先输入值(。>︿<)_θ',
+                    type: 'warning'
+                });
                 return
             }
             //创建一个json对象
@@ -428,9 +454,18 @@ export default {
                 if (res.code===200){
                     this.tableData = res.data
                     this.total=res.total
+                    this.$message({
+                        showClose: true,
+                        message: '已经找到啦~( •̀ ω •́ )y',
+                        type: 'success'
+                    });
                 }
                 else {
-                    alert("获取数据失败")
+                    this.$message({
+                        showClose: true,
+                        message: '查询失败，请重试(っ °Д °;)っ',
+                        type: 'danger'
+                    });
                 }
                 })
         },
