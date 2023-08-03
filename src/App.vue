@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-   <WareIndex></WareIndex>
+   <router-view></router-view>
   </div>
 </template>
 
@@ -13,5 +13,5 @@
 
 </style>
 <script setup>
-import WareIndex from "@/components/WareIndex.vue";
+//import WareIndex from "@/components/WareIndex.vue";
 </script>

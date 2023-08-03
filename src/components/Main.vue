@@ -65,7 +65,7 @@
             <el-table-column prop="option" label="操作">
                 <template slot-scope="scope">
                 <el-button size="small" type="primary" @click="showUpdate(scope.row)">编辑</el-button>
-                    //button包裹在气泡框当中
+                    <!--button包裹在气泡框当中-->
                 <el-popconfirm title="真的要删除吗Σ(っ °Д °;)っ"
                                @confirm="deleteUser(scope.row.id)"
                                style="margin-left: 10px"
