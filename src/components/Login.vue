@@ -17,7 +17,7 @@
                                 @keyup.enter.native="login"
                       ></el-input>
                   </el-form-item>
-                  <el-form-item label="账号" prop="account">
+                  <el-form-item >
                       <el-button type="primary" @click="login"
                                  :disabled="login_disabled">确定</el-button>
                   </el-form-item>
@@ -58,7 +58,7 @@ export default {
                         //console.log((res))
                         if (res.code===200){
                             //存储
-                            sessionStorage.setItem('CurUser',JSON.stringify(res.data))
+                            sessionStorage.setItem('User',JSON.stringify(res.data))
                             this.$router.replace('/WareIndex')
                             this.$message({
                                 showClose: true,
