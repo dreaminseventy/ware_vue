@@ -1,12 +1,4 @@
 <template>
-    <!---
-    <div>
-      <span class="currentDate">
-        <span slot="prefix" class="el-icon-timer"></span>
-        {{dateFormat(date)}}
-      </span>
-
-    </div>-->
     <div>
         <h1>当前日期：{{ currentDate }}</h1>
         <h1>当前时间：{{ currentTime }}</h1>
@@ -20,18 +12,12 @@ export default {
     name: "DataTime",
     data() {
         return {
-            //date:new Date(),
+
             currentDate: '',
             currentTime: ''
         }
     },
     mounted(){
-        //获取当前日期
-        // let that= this;
-        // this.timer = setInterval(function() {
-        //     that.date = new Date().toLocaleString();
-        // });
-        // this.getTime();
         this.getCurrentDateTime();
         this.updateCurrentTime();
     },

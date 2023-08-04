@@ -21,6 +21,22 @@ const routes = [
           title:'首页'
           },
         component: ()=>import('../components/Home.vue')
+      },
+      {
+        path: '/User',
+        name: 'User',
+        meta:{
+          title:'用户操作页面'
+        },
+        component: ()=>import('../components/user/UserManage.vue')
+      },
+      {
+        path: '/Admin',
+        name: 'Admin',
+        meta:{
+          title:'管理员管理页面'
+        },
+        component: ()=>import('@/components/admin/AdminManage.vue')
       }
     ]
   }
