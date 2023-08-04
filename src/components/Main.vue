@@ -303,7 +303,7 @@ export default {
         save(){
            this.centerDialogVisible=false
             this.$axios.post(this.$http+"/user/save ", this.form).then(res=>res.data).then(res=>{
-                console.log((res))
+                //console.log(res)
                 if (res.code===200){
                     this.$message({
                         showClose: true,
@@ -395,7 +395,7 @@ export default {
         },
         //删除功能
         deleteUser(id){
-            console.log(id)
+            //console.log(id)
             this.$axios.delete(this.$http+'/user/delete?id='+id).then(res=>res.data).then(res=>{
                 //console.log(res)
                 if (res.code===200){

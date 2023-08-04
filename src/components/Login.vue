@@ -69,7 +69,8 @@ export default {
                         if (res.code===200){
                             //存储
                             sessionStorage.setItem('User',JSON.stringify(res.data))
-                            this.$router.replace('/WareIndex')
+                            this.getRole(res.data.roleId);
+                            this.$router.replace('/WareIndex');
                             this.$message({
                                 showClose: true,
                                 message: '登录成功~( •̀ ω •́ )y',
@@ -91,6 +92,12 @@ export default {
                     return false;
                 }
             });
+        },
+        getRole(roleId){
+            this.$axios.get(this.$http+"/menu/list?roleId="+roleId).then(res=>res.data).then(res=>{
+                sessionStorage.setItem('Menu',JSON.stringify(res.data))
+                console.log(res)
+            })
         }
     }
     
