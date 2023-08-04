@@ -8,7 +8,10 @@
             <el-header style="text-align: right; font-size: 12px;border-bottom: #000000 1px solid">
                 <WareHeader @doCollapse="doCollapse" :headIcon="headIcon"></WareHeader>
             </el-header>
-            <WareMain></WareMain>
+            <el-main style="height: 100%">
+            <!--<WareMain></WareMain>-->
+                <router-view></router-view>
+            </el-main>
         </el-container>
     </el-container>
 </template>
@@ -16,11 +19,11 @@
 <script>
 import WareAside from "@/components/Aside.vue";
 import WareHeader from "@/components/Header.vue";
-import WareMain from "@/components/Main.vue";
+//import WareMain from "@/components/Main.vue";
 
 export default {
     name: "WareIndex",
-    components: {WareMain, WareHeader, WareAside},
+    components: { WareHeader, WareAside},//WareMain,
     data(){
         return{
             isCollapse:false,

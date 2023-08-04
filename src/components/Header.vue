@@ -22,8 +22,10 @@ export default {
         }
     },
     methods:{
+        //跳转到个人页面
         toUser(){
             console.log("to_user")
+            this.$router.push("/Home")
         },
         //退出登录
         logOut(){
@@ -58,6 +60,9 @@ export default {
     },
     props:{
         headIcon:String
+    },
+    created() {
+        this.$router.push('/Home')
     }
 
 }

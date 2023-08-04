@@ -12,9 +12,23 @@ const routes = [
   {
     path: '/WareIndex',
     name: 'WareIndex',
-    component: ()=>import('../components/WareIndex.vue')
+    component: ()=>import('../components/WareIndex.vue'),
+    children:[
+      {
+        path: '/Home',
+        name: 'Home',
+        meta:{
+          title:'首页'
+          },
+        component: ()=>import('../components/Home.vue')
+      }
+    ]
   }
 ]
+const VueRouterPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (to) {
+  return VueRouterPush.call(this, to).catch(err => err)
+}
 
 const router = new VueRouter({
   mode:'history',

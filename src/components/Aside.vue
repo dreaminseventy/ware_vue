@@ -7,8 +7,9 @@
             style="height: 100%"
             :collapse="isCollapse"
             :collapse-transition = "false"
+            router
     >
-       <el-menu-item index="/home">
+       <el-menu-item index="/Home">
            <i class="el-icon-s-home"></i>
            <span>首页</span>
        </el-menu-item>

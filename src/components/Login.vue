@@ -11,7 +11,7 @@
                                   @keyup.enter.native="login"
                         ></el-input>
                     </el-form-item>
-                  <el-form-item label="密码" prop="account">
+                  <el-form-item label="密码" prop="password">
                       <el-input type="text" v-model="loginForm.password"
                                 autocomplete="off" size="small" show-password
                                 @keyup.enter.native="login"
@@ -56,6 +56,16 @@ export default {
                 if(valid){
                     this.$axios.post(this.$http+"/user/login",this.loginForm).then(res=>res.data).then(res=>{
                         //console.log((res))
+                        if(res.data.isValid!=='Y')
+                        {
+                            this.login_disabled=false;
+                            this.$message({
+                                showClose: true,
+                                message: '该用户已被禁用(っ °Д °;)っ',
+                                type: 'error'
+                            });
+                            return false;
+                        }
                         if (res.code===200){
                             //存储
                             sessionStorage.setItem('User',JSON.stringify(res.data))
@@ -71,18 +81,13 @@ export default {
                             this.$message({
                                 showClose: true,
                                 message: '登录失败，用户名或密码错误，请重试(っ °Д °;)っ',
-                                type: 'danger'
+                                type: 'error'
                             });
                             return false;
                         }
                     });
                 }else {
                     this.login_disabled=false;
-                    this.$message({
-                        showClose: true,
-                        message: '登录失败，请重试(っ °Д °;)っ',
-                        type: 'danger'
-                    });
                     return false;
                 }
             });

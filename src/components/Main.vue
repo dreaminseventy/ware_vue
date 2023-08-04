@@ -1,5 +1,5 @@
 <template>
-    <el-main style="height: 100%">
+    <div>
         <!--查询界面/新增按钮-->
         <div style="padding-bottom: 5px">
             <el-input v-model="account" placeholder="请输入查询账号"
@@ -43,7 +43,7 @@
                 <template slot-scope="scope">
                     <el-tag v-if="scope.row.sex === 1" type="success" disable-transitions>男</el-tag>
                     <el-tag v-else-if="scope.row.sex === 2" type="primary" disable-transitions>女</el-tag>
-                    <el-tag v-if="scope.row.sex === 3" type="success" disable-transitions>购物袋</el-tag>
+                    <el-tag v-if="scope.row.sex === 3" type="info" disable-transitions>购物袋</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="phone" label="电话号码" width="180">
@@ -192,7 +192,7 @@
                 <el-button type="primary" @click="update">确 定</el-button>
             </span>
         </el-dialog>
-    </el-main>
+    </div>
 </template>
 
 <script>
@@ -316,7 +316,7 @@ export default {
                     this.$message({
                         showClose: true,
                         message: '添加用户失败，请重试(っ °Д °;)っ',
-                        type: 'danger'
+                        type: 'error'
                     });
                 }
             })
@@ -388,7 +388,7 @@ export default {
                     this.$message({
                         showClose: true,
                         message: '修改用户失败，请重试(っ °Д °;)っ',
-                        type: 'danger'
+                        type: 'error'
                     });
                 }
             })
@@ -409,7 +409,7 @@ export default {
                     this.$message({
                         showClose: true,
                         message: '删除失败，请重试(╯‵□′)╯︵┻━┻',
-                        type: 'danger'
+                        type: 'error'
                     });
                 }
             })
@@ -464,7 +464,7 @@ export default {
                     this.$message({
                         showClose: true,
                         message: '查询失败，请重试(っ °Д °;)っ',
-                        type: 'danger'
+                        type: 'error'
                     });
                 }
                 })
