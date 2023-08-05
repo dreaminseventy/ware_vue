@@ -58,6 +58,12 @@ export default {
     methods:{
         init(){
             this.user = JSON.parse(sessionStorage.getItem('User'))
+            //console.log("22222:"+this.user)
+            this.$axios.get(this.$http+"/menu/list?roleId="+this.user.roleId).then(res=>res.data).then(res=>{
+                sessionStorage.setItem('Menu',JSON.stringify(res.data))
+                //console.log(res)
+                this.$store.commit('setMenu',res.data)
+            })
         }
     },
     beforeMount() {

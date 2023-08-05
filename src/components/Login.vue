@@ -39,6 +39,7 @@ export default {
                 account:'',
                 password:''
             },
+            //user:{},
             rules:{
                 account:[
                     {required:true,message:'请输入账号',trigger:'blur'}
@@ -53,9 +54,11 @@ export default {
         login(){
             this.login_disabled=true;
             this.$refs.loginForm.validate((valid)=>{
-                if(valid){
+                if(valid){//valid成功为true
+                    //去后台数据库验证用户名和密码
                     this.$axios.post(this.$http+"/user/login",this.loginForm).then(res=>res.data).then(res=>{
-                        //console.log((res))
+                        //console.log(res)
+                        //验证是否启用
                         if(res.data.isValid!=='Y')
                         {
                             this.login_disabled=false;
@@ -69,8 +72,10 @@ export default {
                         if (res.code===200){
                             //存储
                             sessionStorage.setItem('User',JSON.stringify(res.data))
-                            this.getRole(res.data.roleId);
-                            this.$router.replace('/WareIndex');
+                            //console.log("1111"+res.data)
+                            this.user = res.data
+                            //跳转到主页
+                            this.$router.replace('/Home')
                             this.$message({
                                 showClose: true,
                                 message: '登录成功~( •̀ ω •́ )y',
@@ -93,12 +98,6 @@ export default {
                 }
             });
         },
-        getRole(roleId){
-            this.$axios.get(this.$http+"/menu/list?roleId="+roleId).then(res=>res.data).then(res=>{
-                sessionStorage.setItem('Menu',JSON.stringify(res.data))
-                console.log(res)
-            })
-        }
     }
     
 }
