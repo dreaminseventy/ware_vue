@@ -2,7 +2,7 @@
     <div>
         <!--查询界面/新增按钮-->
         <div style="padding-bottom: 5px">
-            <el-input v-model="name" placeholder="请输入查询仓库名"
+            <el-input v-model="name" placeholder="请输入查询分类名"
                       @keydown.enter.native="loadPost"
                       suffix-icon="el-icon-search" style="width: 200px;padding-left: 10px"></el-input>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
@@ -99,19 +99,19 @@
 
 
 export default {
-    name: "StorageManage",
+    name: "GoodsTypeManage",
     data() {
         //用于对账户是否以存在进行查询
         let checkDuplicate =(rule,value,callbacke)=>{
             if(this.form.id){
                 return callbacke
             }
-            this.$axios.get(this.$http+'/storage/findByName?name='+this.form.name).then(res=>res.data).then(res=>{
+            this.$axios.get(this.$http+'/goodstype/findByName?name='+this.form.name).then(res=>res.data).then(res=>{
                 //console.log(res)
                 if (res.code!==200){
                     return callbacke
                 }else {
-                    return callbacke(new Error('仓库已存在'))
+                    return callbacke(new Error('该分类已存在'))
                 }
             })
         };
@@ -138,7 +138,7 @@ export default {
             //为新增添加规则
             rules: {
                 name: [
-                    {required: true, message: '请输入仓库名', trigger: 'blur'},
+                    {required: true, message: '请输入分类名', trigger: 'blur'},
                     {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'},
                     {validator:checkDuplicate,trigger: 'blur'}
                 ],
@@ -149,12 +149,12 @@ export default {
         //保存新增用户方法
         save(){
             this.centerDialogVisible=false
-            this.$axios.post(this.$http+"/storage/save ", this.form).then(res=>res.data).then(res=>{
+            this.$axios.post(this.$http+"/goodstype/save ", this.form).then(res=>res.data).then(res=>{
                 console.log(res)
                 if (res.code===200){
                     this.$message({
                         showClose: true,
-                        message: '成功新增仓库( •̀ ω •́ )y',
+                        message: '成功新增分类( •̀ ω •́ )y',
                         type: 'success'
                     });
                     this.loadGet()
@@ -162,7 +162,7 @@ export default {
                 else {
                     this.$message({
                         showClose: true,
-                        message: '添加仓库失败，请重试(っ °Д °;)っ',
+                        message: '添加分类失败，请重试(っ °Д °;)っ',
                         type: 'error'
                     });
                 }
@@ -197,12 +197,12 @@ export default {
         },
         //3.修改信息
         update(){
-            this.$axios.put(this.$http+'/storage/update',this.form1).then(res=>res.data).then(res=>{
+            this.$axios.put(this.$http+'/goodstype/update',this.form1).then(res=>res.data).then(res=>{
                 //console.log(res)
                 if (res.code===200){
                     this.$message({
                         showClose: true,
-                        message: '成功修改仓库( •̀ ω •́ )y',
+                        message: '成功修改物品分类( •̀ ω •́ )y',
                         type: 'success'
                     });
                     this.centerDialogVisible1=false
@@ -210,7 +210,7 @@ export default {
                 }else {
                     this.$message({
                         showClose: true,
-                        message: '修改仓库失败，请重试(っ °Д °;)っ',
+                        message: '修改分类失败，请重试(っ °Д °;)っ',
                         type: 'error'
                     });
                 }
@@ -219,7 +219,7 @@ export default {
         //删除功能
         deleteUser(id){
             //console.log(id)
-            this.$axios.delete(this.$http+'/storage/delete?id='+id).then(res=>res.data).then(res=>{
+            this.$axios.delete(this.$http+'/goodstype/delete?id='+id).then(res=>res.data).then(res=>{
                 //console.log(res)
                 if (res.code===200){
                     this.$message({
@@ -239,7 +239,7 @@ export default {
         },
         //主要查询（使用get查询全部数据,包含分页查询）
         loadGet(){
-            this.$axios.get(this.$http+'/storage/page',{
+            this.$axios.get(this.$http+'/goodstype/page',{
                 params:{
                     pageNum:this.pageNum,
                     pageSize:this.pageSize,
@@ -271,7 +271,7 @@ export default {
                 pageSize:this.pageSize
             }
             //console.log(SelectBean)
-            this.$axios.post(this.$http+"/storage/list1", SelectBean).then(res=>res.data).then(res=>{
+            this.$axios.post(this.$http+"/goodstype/list1", SelectBean).then(res=>res.data).then(res=>{
                 //console.log((res))
                 if (res.code===200){
                     this.tableData = res.data

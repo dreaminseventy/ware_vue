@@ -173,7 +173,6 @@
                     <el-radio-group v-model="form1.roleId">
                         <el-radio label="0">用户</el-radio>
                         <el-radio label="1">管理员</el-radio>
-                        <el-radio label="2">超级管理员</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="是否启用" prop="isValid">
@@ -336,10 +335,11 @@ export default {
         },
         //重制查询框内容，并使页面返回初始状态
         reset(){
+            this.account=''
             this.sex=''
             this.name=''
             this.pageNum=1
-            this.pageSize=5
+            this.pageSize=10
             this.loadGet()
 
         },
@@ -385,7 +385,7 @@ export default {
                         type: 'success'
                     });
                     this.centerDialogVisible1=false
-                    this.loadGet()
+                    this.reset();
                 }else {
                     this.$message({
                         showClose: true,

@@ -2,22 +2,15 @@
     <div>
         <!--查询界面/新增按钮-->
         <div style="padding-bottom: 5px">
-            <el-input v-model="account" placeholder="请输入查询账号"
-                      @keydown.enter.native="loadPost"
-                      suffix-icon="el-icon-search" style="width: 200px"></el-input>
-            <el-input v-model="name" placeholder="请输入查询用户名"
+            <el-input v-model="name" placeholder="请输入查询货物名"
                       @keydown.enter.native="loadPost"
                       suffix-icon="el-icon-search" style="width: 200px;padding-left: 10px"></el-input>
-            <el-select v-model="sex" filterable placeholder="请选择性别"
-                       @keydown.enter.native="loadPost"
-                       style="padding-left: 10px">
-                <el-option
-                        v-for="item in sexs"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                </el-option>
-            </el-select>
+            <el-input v-model="storage" placeholder="请输入查询货物所属仓库"
+                      @keydown.enter.native="loadPost"
+                      suffix-icon="el-icon-search" style="width: 200px;padding-left: 10px"></el-input>
+            <el-input v-model="goodstype" placeholder="请输入查询货物所属分类"
+                      @keydown.enter.native="loadPost"
+                      suffix-icon="el-icon-search" style="width: 200px;padding-left: 10px"></el-input>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
             <el-button type="warning" @click = "reset">重置</el-button>
             <el-button type="success" style="margin-left: 500px" @click="addNew" >新增</el-button>
@@ -31,36 +24,15 @@
             </el-table-column>
             <el-table-column prop="id" label="ID" width="60" >
             </el-table-column>
-            <el-table-column prop="account" label="账号" width="170" >
+            <el-table-column prop="name" label="货物名" width="160">
             </el-table-column>
-            <el-table-column prop="name" label="用户名" width="170">
+            <el-table-column prop="storage" label="关联仓库" width="160">
             </el-table-column>
-            <el-table-column prop="password" label="密码" width="170">
+            <el-table-column prop="goodstype" label="货物分类" width="160">
             </el-table-column>
-            <el-table-column prop="age" label="年龄" width="80">
+            <el-table-column prop="count" label="货物数量" width="70">
             </el-table-column>
-            <el-table-column prop="sex" label="性别" width="80">
-                <template slot-scope="scope">
-                    <el-tag v-if="scope.row.sex === 1" type="success" disable-transitions>男</el-tag>
-                    <el-tag v-else-if="scope.row.sex === 2" type="primary" disable-transitions>女</el-tag>
-                    <el-tag v-if="scope.row.sex === 3" type="info" disable-transitions>购物袋</el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column prop="phone" label="电话号码" width="180">
-            </el-table-column>
-            <el-table-column prop="roleId" label="角色权限" width="130">
-                <template slot-scope="scope">
-                    <el-tag v-if="scope.row.roleId === 1" type="warning" disable-transitions>管理员</el-tag>
-                    <el-tag v-else-if="scope.row.roleId === 2" type="danger" disable-transitions>超级管理员</el-tag>
-                    <el-tag v-if="scope.row.roleId === 0" type="primary" disable-transitions>用户</el-tag>
-                </template>
-            </el-table-column>
-            <el-table-column prop="isValid" label="是否启用" width="100">
-                <template slot-scope="scope">
-                    <el-tag
-                            :type="scope.row.isValid === 'Y' ? 'success' : 'danger'"
-                            disable-transitions>{{scope.row.isValid === 'Y' ? '启用' : '禁用'}}</el-tag>
-                </template>
+            <el-table-column prop="remark" label="备注" width="500">
             </el-table-column>
             <el-table-column prop="option" label="操作">
                 <template slot-scope="scope">
@@ -92,36 +64,29 @@
                 width="30%"
                 center>
             <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-                <el-form-item label="账号" prop="account">
-                    <el-col :span="20">
-                        <el-input v-model="form.account"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="用户名" prop="name">
+                <el-form-item label="货物名" prop="name">
                     <el-col :span="20">
                         <el-input v-model="form.name"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="密码" prop="password">
+                <el-form-item label="仓库名" prop="storage">
                     <el-col :span="20">
-                        <el-input v-model="form.password"></el-input>
+                        <el-input v-model="form.storage"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="年龄" prop="age">
+                <el-form-item label="货物分类" prop="goodstype">
                     <el-col :span="20">
-                        <el-input v-model="form.age"></el-input>
+                        <el-input v-model="form.goodstype"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="性别" prop="sex">
-                    <el-radio-group v-model="form.sex">
-                        <el-radio label="1">男</el-radio>
-                        <el-radio label="2">女</el-radio>
-                        <el-radio label="3">沃尔玛购物袋</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="电话" prop="phone">
+                <el-form-item label="货物数量" prop="count">
                     <el-col :span="20">
-                        <el-input v-model="form.phone"></el-input>
+                        <el-input v-model="form.count"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="备注" prop="remark">
+                    <el-col :span="20">
+                        <el-input type="textarea" v-model="form.remark"></el-input>
                     </el-col>
                 </el-form-item>
             </el-form>
@@ -137,55 +102,32 @@
                 width="30%"
                 center>
             <el-form ref="form1" :model="form1" :rules="rules" label-width="80px">
-                <el-form-item label="账号" prop="account">
-                    <el-col :span="20">
-                        <el-input v-model="form1.account"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="用户名" prop="name">
+                <el-form-item label="货物名" prop="name">
                     <el-col :span="20">
                         <el-input v-model="form1.name"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="密码" prop="password">
+                <el-form-item label="仓库名" prop="storage">
                     <el-col :span="20">
-                        <el-input v-model="form1.password"></el-input>
+                        <el-input v-model="form1.storage"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="年龄" prop="age">
+                <el-form-item label="货物分类" prop="goodstype">
                     <el-col :span="20">
-                        <el-input v-model="form1.age"></el-input>
+                        <el-input v-model="form1.goodstype"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="性别" prop="sex">
-                    <el-radio-group v-model="form1.sex">
-                        <el-radio label="1">男</el-radio>
-                        <el-radio label="2">女</el-radio>
-                        <el-radio label="3">沃尔玛购物袋</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="电话" prop="phone">
+                <el-form-item label="货物数量" prop="count">
                     <el-col :span="20">
-                        <el-input v-model="form1.phone"></el-input>
+                        <el-input v-model="form1.count"></el-input>
                     </el-col>
                 </el-form-item>
-                <el-form-item label="权限" prop="roleId">
-                    <el-radio-group v-model="form1.roleId">
-                        <el-radio label="0">用户</el-radio>
-                        <el-radio label="1">管理员</el-radio>
-                        <el-radio label="2">超级管理员</el-radio>
-                    </el-radio-group>
+                <el-form-item label="备注" prop="remark">
+                    <el-col :span="20">
+                        <el-input type="textarea" v-model="form1.remark"></el-input>
+                    </el-col>
                 </el-form-item>
-                <el-form-item label="是否启用" prop="isValid">
-                    <el-tooltip :content=isValidValue placement="top">
-                        <el-switch
-                                @click.native="change"
-                                v-model="form1.isValid"
-                                active-color="#13ce66"
-                                inactive-color="#ff4949">
-                        </el-switch>
-                    </el-tooltip>
-                </el-form-item>
+
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="centerDialogVisible1 = false">取 消</el-button>
@@ -199,119 +141,91 @@
 
 
 export default {
-    name: "AdminManage",
+    name: "StorageManage",
     data() {
-        //对年龄大于150的进行重新输入
-        let checkAge = (rule,value,callback)=>{
-            if(value>150){
-                callback(new Error('太老了,请重试'));
-            }else {
+        //用于对账户是否以存在进行查询
+        let checkCount = (rule, value, callback) => {
+            if(value>99999){
+                callback(new Error('数量输⼊过⼤'));
+            }else{
                 callback();
             }
         };
-        //用于对账户是否以存在进行查询
         let checkDuplicate =(rule,value,callbacke)=>{
             if(this.form.id){
                 return callbacke
             }
-            this.$axios.get(this.$http+'/user/findByAccount?account='+this.form.account).then(res=>res.data).then(res=>{
+            this.$axios.get(this.$http+'/goods/findByName?name='+this.form.name).then(res=>res.data).then(res=>{
                 //console.log(res)
                 if (res.code!==200){
                     return callbacke
                 }else {
-                    return callbacke(new Error('账号已存在'))
+                    return callbacke(new Error('仓库已存在'))
                 }
             })
         };
         return {
             tableData: [],//查询的内容在这里展示
+            bool:true,
             menu:JSON.parse(sessionStorage.getItem('Menu')),
             pageSize: 5,
             pageNum: 1,
             total: 10,
             name: '',
-            sex: '',
-            account: '',
-            sexs: [
-                {
-                    value: 1,
-                    label: '男'
-                },
-                {
-                    value: 2,
-                    label: '女'
-                },
-                {
-                    value: 3,
-                    label: '沃尔玛购物袋'
-                },
-                {
-                    value: '',
-                    label: ''
-                }
-            ],
+            storage:'',
+            goodstype:'',
             centerDialogVisible1: false,
             centerDialogVisible: false,//将新增表单设为不可见
             //设置表单的form参数
             form: {
-                account: '',
+                id: '',
                 name: '',
-                password: '',
-                age: '',
-                sex: '3',
-                roleId:1,
-                phone: ''
+                remark: '',
+                goodstype:'',
+                storage:'',
+                count:''
             },
             form1: {
                 id:'',
-                account: '',
                 name: '',
-                password: '',
-                age: '',
-                sex: '3',
-                phone: '',
-                roleId:'',
-                isValid:''
+                remark: '',
+                goodstype:'',
+                storage:'',
+                count:''
             },
             //为新增添加规则
             rules: {
-                account: [
-                    {required: true, message: '请输入账号', trigger: 'blur'},
+                name: [
+                    {required: true, message: '请输入物品名', trigger: 'blur'},
                     {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'},
                     {validator:checkDuplicate,trigger: 'blur'}
                 ],
-                name: [
-                    {required: true, message: '请输入用户名', trigger: 'blur'},
-                    {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'}
+                storage: [
+                    {required: true, message: '请输入所属仓库', trigger: 'blur'},
+                    {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'},
                 ],
-                password: [
-                    {required: true, message: '请输入密码', trigger: 'blur'},
-                    {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'}
+                goodstype: [
+                    {required: true, message: '请输入所属分类', trigger: 'blur'},
+                    {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'},
                 ],
-                age: [
-                    {required: true, message: '请输入年龄', trigger: 'blur'},
-                    {min: 1, max: 3, message: '长度在 1 到 3 个字符', trigger: 'blur'},
-                    {pattern: /^([1-9][0-9]*){1,3}$/,message: '年龄必须为正整数',trigger: 'blur'},
-                    {validator:checkAge,trigger: 'blur'}
-                ],
-                phone: [
-                    {required: true, message: '手机号码不能为空', trigger: 'blur'},
-                    {pattern: /^1[3-9][0-9]\d{8}$/,message: '请输入正确的手机号码',trigger: 'blur'}
+                count: [
+                    {required: true, message: '请输⼊数量', trigger: 'blur'},
+                    {pattern: /^([1-9][0-9]*){1,4}$/,message: '数量必须为正整数字',trigger: "blur"},
+                    {validator:checkCount,trigger: 'blur'}
                 ]
             },
-            isValidValue:'已启用'
         }
     },
     methods:{
         //保存新增用户方法
         save(){
             this.centerDialogVisible=false
-            this.$axios.post(this.$http+"/user/save ", this.form).then(res=>res.data).then(res=>{
-                //console.log(res)
+            this.$axios.post(this.$http+"/goods/save ", this.form).then(res=>res.data).then(res=>{
+                console.log(res)
                 if (res.code===200){
                     this.$message({
                         showClose: true,
-                        message: '成功新增用户( •̀ ω •́ )y',
+                        message: '成功新增仓库( •̀ ω •́ )y',
                         type: 'success'
                     });
                     this.loadGet()
@@ -319,7 +233,7 @@ export default {
                 else {
                     this.$message({
                         showClose: true,
-                        message: '添加用户失败，请重试(っ °Д °;)っ',
+                        message: '添加仓库失败，请重试(っ °Д °;)っ',
                         type: 'error'
                     });
                 }
@@ -338,53 +252,32 @@ export default {
         },
         //重制查询框内容，并使页面返回初始状态
         reset(){
-            this.account=''
-            this.sex=''
             this.name=''
             this.pageNum=1
             this.pageSize=5
+            this.bool=true
             this.loadGet()
-
         },
         //编辑功能
         //1.展示当前列中的内容
         showUpdate(row){
             //console.log(row)
             this.form1.id = row.id
-            this.form1.account = row.account
             this.form1.name = row.name
-            this.form1.password =''
-            this.form1.age = row.age
-            this.form1.sex = row.sex+''//将sex转成string类型
-            this.form1.phone = row.phone
-            this.form1.roleId = row.roleId+''//将roleId转成string类型
-            this.form1.isValid = row.isValid === 'Y';
-            this.change()
+            this.form1.remark = row.remark
+            this.form1.count = row.count
+            this.form1.storage = row.storage
+            this.form1.goodstype =row.goodstype
             this.centerDialogVisible1=true
-        },
-        //2.改变启用状态栏信息
-        change(){
-            if(this.form1.isValid){
-                this.isValidValue='已启用'
-            }else {
-                this.isValidValue='已禁用'
-            }
-
         },
         //3.修改信息
         update(){
-            if(this.form1.isValid ){
-                this.form1.isValid='Y'
-            }
-            else {
-                this.form1.isValid='N'
-            }
-            this.$axios.put(this.$http+'/user/update',this.form1).then(res=>res.data).then(res=>{
+            this.$axios.put(this.$http+'/goods/update',this.form1).then(res=>res.data).then(res=>{
                 //console.log(res)
                 if (res.code===200){
                     this.$message({
                         showClose: true,
-                        message: '成功修改用户( •̀ ω •́ )y',
+                        message: '成功修改仓库( •̀ ω •́ )y',
                         type: 'success'
                     });
                     this.centerDialogVisible1=false
@@ -392,7 +285,7 @@ export default {
                 }else {
                     this.$message({
                         showClose: true,
-                        message: '修改用户失败，请重试(っ °Д °;)っ',
+                        message: '修改仓库失败，请重试(っ °Д °;)っ',
                         type: 'error'
                     });
                 }
@@ -401,7 +294,7 @@ export default {
         //删除功能
         deleteUser(id){
             //console.log(id)
-            this.$axios.delete(this.$http+'/user/delete?id='+id).then(res=>res.data).then(res=>{
+            this.$axios.delete(this.$http+'/goods/delete?id='+id).then(res=>res.data).then(res=>{
                 //console.log(res)
                 if (res.code===200){
                     this.$message({
@@ -421,11 +314,10 @@ export default {
         },
         //主要查询（使用get查询全部数据,包含分页查询）
         loadGet(){
-            this.$axios.get(this.$http+'/user/page',{
+            this.$axios.get(this.$http+'/goods/page',{
                 params:{
                     pageNum:this.pageNum,
                     pageSize:this.pageSize,
-                    roleId:1
                 }
             }).then(res=>res.data).then(res=>{
                 //console.log(res)
@@ -439,7 +331,7 @@ export default {
         },
         //上方选择查询(使用post传递json数据对象，包含分页)
         loadPost(){
-            if (this.name===''&&this.sex===''&&this.account===''){
+            if (this.name===''&&this.storage===''&&this.goodstype===''){
                 this.$message({
                     showClose: true,
                     message: '搜索栏为空，请先输入值(。>︿<)_θ',
@@ -452,20 +344,24 @@ export default {
                 name:this.name,
                 pageNum:this.pageNum,
                 pageSize:this.pageSize,
-                sex:this.sex,
-                account:this.account,
-                roleId:1
+                storage:this.storage,
+                goodstype:this.goodstype,
             }
-            this.$axios.post(this.$http+"/user/list1", SelectBean).then(res=>res.data).then(res=>{
+
+            //console.log(SelectBean)
+            this.$axios.post(this.$http+"/goods/list1", SelectBean).then(res=>res.data).then(res=>{
                 //console.log((res))
                 if (res.code===200){
                     this.tableData = res.data
                     this.total=res.total
+                    if(this.bool){
                     this.$message({
                         showClose: true,
                         message: '已经找到啦~( •̀ ω •́ )y',
                         type: 'success'
                     });
+                    this.bool=false
+                    }
                 }
                 else {
                     this.$message({
@@ -481,8 +377,9 @@ export default {
             console.log(`每页 ${val} 条`);
             this.pageNum=1
             this.pageSize=val
-            if(this.name===''&&this.sex===''&&this.account===''){
+            if(this.name===''&&this.storage===''&&this.goodstype===''){
                 this.loadGet()
+                this.bool=true
             }
             else {
                 this.loadPost()
@@ -493,14 +390,26 @@ export default {
         handleCurrentChange(val) {
             console.log(`当前页: ${val}`);
             this.pageNum=val
-            if(this.name===''&&this.sex===''&&this.account===''){
+            if(this.name===''&&this.storage===''&&this.goodstype===''){
                 this.loadGet()
+                this.bool=true
             }
             else {
                 this.loadPost()
             }
         }
 
+    },
+    watch:{
+        name(){
+            this.bool = true;
+        },
+        storage(){
+            this.bool=true;
+        },
+        goodstype(){
+            this.bool=true;
+        }
     },
     //页面加载前先进行数据读取
     beforeMount() {
