@@ -2,8 +2,21 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
+// //解决报错
+// const originalPush = VueRouter.prototype.push
+// const originalReplace = VueRouter.prototype.replace
+// // push
+// VueRouter.prototype.push = function push (location, onResolve, onReject) {
+//   if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+//   return originalPush.call(this, location).catch(err => err)
+// }
+// // replace
+// VueRouter.prototype.replace = function push (location, onResolve, onReject) {
+//   if (onResolve || onReject) return originalReplace.call(this, location, onResolve, onReject)
+//   return originalReplace.call(this, location).catch(err => err)
+// }
 
-const routes = [
+const constantRoutes = [
   {
     path: '/',
     name: 'login',
@@ -21,22 +34,6 @@ const routes = [
           title:'首页'
           },
         component: ()=>import('../components/Home.vue')
-      },
-      {
-        path: '/User',
-        name: 'User',
-        meta:{
-          title:'用户操作页面'
-        },
-        component: ()=>import('../components/user/UserManage.vue')
-      },
-      {
-        path: '/Admin',
-        name: 'Admin',
-        meta:{
-          title:'管理员管理页面'
-        },
-        component: ()=>import('@/components/admin/AdminManage.vue')
       }
     ]
   }
@@ -46,9 +43,16 @@ VueRouter.prototype.push = function push (to) {
   return VueRouterPush.call(this, to).catch(err => err)
 }
 
-const router = new VueRouter({
-  mode:'history',
-  routes
-})
+
+
+const createRouter = ()=>new VueRouter({
+  routes: constantRoutes
+});
+
+const router = createRouter();
+export function  resetRouter(){
+  const newRouter = createRouter();
+  router.matcher = newRouter.matcher;
+}
 
 export default router;
