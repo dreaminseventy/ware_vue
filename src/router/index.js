@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+
 Vue.use(VueRouter)
 // //解决报错
 // const originalPush = VueRouter.prototype.push
@@ -42,8 +43,6 @@ const VueRouterPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (to) {
   return VueRouterPush.call(this, to).catch(err => err)
 }
-
-
 
 const createRouter = ()=>new VueRouter({
   routes: constantRoutes

@@ -59,17 +59,17 @@ export default {
                     this.$axios.post(this.$http+"/user/login",this.loginForm).then(res=>res.data).then(res=>{
                         //console.log(res)
                         //验证是否启用
-                        if(res.data.isValid!=='Y')
-                        {
-                            this.login_disabled=false;
-                            this.$message({
-                                showClose: true,
-                                message: '该用户已被禁用(っ °Д °;)っ',
-                                type: 'error'
-                            });
-                            return false;
-                        }
                         if (res.code===200){
+                            if(res.data.isValid!=='Y')
+                            {
+                                this.login_disabled=false;
+                                this.$message({
+                                    showClose: true,
+                                    message: '该用户已被禁用(っ °Д °;)っ',
+                                    type: 'error'
+                                });
+                                return false;
+                            }
                             //存储
                             sessionStorage.setItem('User',JSON.stringify(res.data))
                             //console.log("1111"+res.data)

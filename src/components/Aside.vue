@@ -53,7 +53,7 @@ export default {
             }
         }
     },
-    created () {
+    beforeMount () {
         //在页面加载时读取sessionStorage里的状态信息
         if (sessionStorage.getItem("Menu") ) {
             this.$store.replaceState(Object.assign({}, this.$store.state,JSON.parse(sessionStorage.getItem("Menu"))))

@@ -1,6 +1,6 @@
 import vue from 'vue'
 import Vuex from 'vuex'
-import router , {resetRouter} from "../router";
+import router, {resetRouter}  from "../router";
 vue.use(Vuex)
     //
 function addNewRoute(menuList) {
