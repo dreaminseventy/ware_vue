@@ -144,10 +144,15 @@
         </el-dialog>
         <!--入出库-->
         <el-dialog
-            width="30%"
-            title="内层 Dialog"
+            width="90%"
+            title="选择用户"
             :visible.sync="innerVisible"
             append-to-body>
+            <Select @selectUser="selectUser"></Select>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="innerVisible=false">取 消</el-button>
+                <el-button type="primary" @click="confirmUser">确 定</el-button>
+            </span>
         </el-dialog>
         <el-dialog
             title="提示"
@@ -172,7 +177,7 @@
                 </el-form-item>
                 <el-form-item label="申请人" prop="username" >
                     <el-col :span="20">
-                        <el-input v-model="intoForm.username"></el-input>
+                        <el-input v-model="intoForm.username" @click.native="select"></el-input>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="货物数量" prop="count">
@@ -197,8 +202,11 @@
 <script>
 
 
+import Select from "@/components/user/Select.vue";
+
 export default {
     name: "GoodsManage",
+    components: {Select},
     data() {
         //用于对账户是否以存在进行查询
         let checkCount = (rule, value, callback) => {
@@ -221,16 +229,17 @@ export default {
                 }
             })
         };
-        let checkDuplicate2 =(rule,value,callbacke)=>{
-            this.$axios.get(this.$http+'/user/findByName?name='+this.intoForm.username).then(res=>res.data).then(res=>{
-                if (res.code!==200){
-                   return callbacke(new Error('用户不存在'))
-                }else {
-                    this.intoForm.userid = res.data.id
-                    return callbacke
-                }
-            })
-        };
+        //出入库1.0
+        // let checkDuplicate2 =(rule,value,callbacke)=>{
+        //     this.$axios.get(this.$http+'/user/findByName?name='+this.intoForm.username).then(res=>res.data).then(res=>{
+        //         if (res.code!==200){
+        //            return callbacke(new Error('用户不存在'))
+        //         }else {
+        //             this.intoForm.userid = res.data.id
+        //             return callbacke
+        //         }
+        //     })
+        // };
         return {
             tableData: [],//查询的内容在这里展示
             bool:true,
@@ -273,7 +282,8 @@ export default {
                 goodstype:'',
                 count:'',
                 remark:'',
-                manage:''
+                manage:'',
+                tempVal:{},
             },
             currentRow: '',
             //为新增添加规则
@@ -298,11 +308,13 @@ export default {
                 ]
             },
             rules2: {
-                username: [
-                    {required: true, message: '请输入申请人姓名', trigger: 'blur'},
-                    {min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur'},
-                    {validator:checkDuplicate2,trigger: 'blur'}
-                ],
+                //出入库1.0
+                // username: [
+                //     {required: true, message: '请输入申请人姓名', trigger: 'blur'},
+                //
+                //     //{min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur'},
+                //     //{validator:checkDuplicate2,trigger: 'blur'}
+                // ],
                 count: [
                     {required: true, message: '请输入数量', trigger: 'blur'},
                 ],
@@ -577,10 +589,22 @@ export default {
         setCurrent(row) {
             this.$refs.singleTable.setCurrentRow(row);
         },
+        //获取选中的值
         getCurrent(val){
             this.currentRow = val;
         },
-
+        //入库2.0
+        select(){
+            this.innerVisible=true
+        },
+        confirmUser(){
+            this.intoForm.username = this.tempVal.name
+            this.intoForm.userid = this.tempVal.id
+            this.innerVisible=false
+        },
+        selectUser(val){
+            this.tempVal = val
+        }
     },
     watch:{
         name(){
