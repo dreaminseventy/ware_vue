@@ -62,7 +62,7 @@
 import moment from "moment";
 
 export default {
-    name: "StorageManage",
+    name: "RecordManage",
     data() {
         return {
             tableData: [],//查询的内容在这里展示

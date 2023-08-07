@@ -13,12 +13,21 @@
                       suffix-icon="el-icon-search" style="width: 200px;padding-left: 10px"></el-input>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
             <el-button type="warning" @click = "reset">重置</el-button>
-            <el-button type="success" style="margin-left: 500px" @click="addNew" >新增</el-button>
+            <el-button type="info" @click="setCurrent">取消选择</el-button>
+            <el-button type="success" style="margin-left: 268px" @click="addNew" >新增</el-button>
+            <el-button type="success" @click="into" >入库</el-button>
+            <el-button type="success" @click="output" >出库</el-button>
+
+
         </div>
         <!--中间查询数据展示界面-->
         <el-table :data="tableData"
                   :header-cell-style="{ background:'#555d65',color:'#f2f2f2'}"
                   border style="width: 100%"
+                  @current-change="getCurrent"
+                  highlight-current-row
+                  tooltip-effect="dark"
+                  ref="singleTable"
         >
             <el-table-column  type="index" width="50" label="序号">
             </el-table-column>
@@ -32,7 +41,7 @@
             </el-table-column>
             <el-table-column prop="count" label="货物数量" width="70">
             </el-table-column>
-            <el-table-column prop="remark" label="备注" width="500">
+            <el-table-column prop="remark" label="备注" width="450">
             </el-table-column>
             <el-table-column prop="option" label="操作">
                 <template slot-scope="scope">
@@ -127,11 +136,59 @@
                         <el-input type="textarea" v-model="form1.remark"></el-input>
                     </el-col>
                 </el-form-item>
-
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="centerDialogVisible1 = false">取 消</el-button>
                 <el-button type="primary" @click="update">确 定</el-button>
+            </span>
+        </el-dialog>
+        <!--入出库-->
+        <el-dialog
+            width="30%"
+            title="内层 Dialog"
+            :visible.sync="innerVisible"
+            append-to-body>
+        </el-dialog>
+        <el-dialog
+            title="提示"
+            :visible.sync="intoVisible"
+            width="30%"
+            center>
+            <el-form ref="intoForm" :rules="rules2" :model="intoForm"  label-width="80px">
+                <el-form-item label="货物名" prop="name" >
+                    <el-col :span="20">
+                        <el-input v-model="intoForm.name" :readonly=true></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="仓库名" prop="storage">
+                    <el-col :span="20">
+                        <el-input v-model="intoForm.storage" :readonly=true></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="货物分类" prop="goodstype" >
+                    <el-col :span="20">
+                        <el-input v-model="intoForm.goodstype" :readonly=true></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="申请人" prop="username" >
+                    <el-col :span="20">
+                        <el-input v-model="intoForm.username"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="货物数量" prop="count">
+                    <el-col :span="20">
+                        <el-input v-model="intoForm.count"></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="备注" prop="remark">
+                    <el-col :span="20">
+                        <el-input type="textarea" v-model="intoForm.remark"></el-input>
+                    </el-col>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="intoVisible = false">取 消</el-button>
+                <el-button type="primary" @click="Storage">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -141,7 +198,7 @@
 
 
 export default {
-    name: "StorageManage",
+    name: "GoodsManage",
     data() {
         //用于对账户是否以存在进行查询
         let checkCount = (rule, value, callback) => {
@@ -160,7 +217,17 @@ export default {
                 if (res.code!==200){
                     return callbacke
                 }else {
-                    return callbacke(new Error('仓库已存在'))
+                    return callbacke(new Error('用户已存在'))
+                }
+            })
+        };
+        let checkDuplicate2 =(rule,value,callbacke)=>{
+            this.$axios.get(this.$http+'/user/findByName?name='+this.intoForm.username).then(res=>res.data).then(res=>{
+                if (res.code!==200){
+                   return callbacke(new Error('用户不存在'))
+                }else {
+                    this.intoForm.userid = res.data.id
+                    return callbacke
                 }
             })
         };
@@ -168,12 +235,15 @@ export default {
             tableData: [],//查询的内容在这里展示
             bool:true,
             menu:JSON.parse(sessionStorage.getItem('Menu')),
+            user:JSON.parse(sessionStorage.getItem('User')),
             pageSize: 5,
             pageNum: 1,
             total: 10,
             name: '',
             storage:'',
             goodstype:'',
+            intoVisible:false,
+            innerVisible:false,
             centerDialogVisible1: false,
             centerDialogVisible: false,//将新增表单设为不可见
             //设置表单的form参数
@@ -193,6 +263,19 @@ export default {
                 storage:'',
                 count:''
             },
+            intoForm:{
+                id:'',
+                name:'',
+                username:'',
+                userid:'',
+                adminid:'',
+                storage:'',
+                goodstype:'',
+                count:'',
+                remark:'',
+                manage:''
+            },
+            currentRow: '',
             //为新增添加规则
             rules: {
                 name: [
@@ -213,6 +296,16 @@ export default {
                     {pattern: /^([1-9][0-9]*){1,4}$/,message: '数量必须为正整数字',trigger: "blur"},
                     {validator:checkCount,trigger: 'blur'}
                 ]
+            },
+            rules2: {
+                username: [
+                    {required: true, message: '请输入申请人姓名', trigger: 'blur'},
+                    {min: 1, max: 12, message: '长度在 1 到 12 个字符', trigger: 'blur'},
+                    {validator:checkDuplicate2,trigger: 'blur'}
+                ],
+                count: [
+                    {required: true, message: '请输入数量', trigger: 'blur'},
+                ],
             },
         }
     },
@@ -249,6 +342,86 @@ export default {
             this.$nextTick(()=>
                 this.resetForm()
             )
+        },
+        //入库
+        into(){
+            if (this.currentRow===null || this.currentRow===''){
+                this.$message({
+                    showClose: true,
+                    message: '请先选择好需要入库的物品(っ °Д °;)っ',
+                    type: 'warning'
+                });
+                return;
+            }
+            this.intoVisible=true
+            this.intoForm.id = this.currentRow.id
+            this.intoForm.name = this.currentRow.name
+            this.intoForm.storage = this.currentRow.storage
+            this.intoForm.goodstype = this.currentRow.goodstype
+            this.intoForm.count = ''
+            this.intoForm.username = ''
+            this.intoForm.adminid = this.user.id
+            this.intoForm.remark = this.currentRow.remark+"（入库）"
+            this.intoForm.manage = 1
+        },
+        //出库
+        output(){
+            if (this.currentRow===null || this.currentRow===''){
+                this.$message({
+                    showClose: true,
+                    message: '请先选择好需要出库的物品(っ °Д °;)っ',
+                    type: 'warning'
+                });
+                return;
+            }
+            this.intoVisible=true
+            this.intoForm.id = this.currentRow.id
+            this.intoForm.name = this.currentRow.name
+            this.intoForm.storage = this.currentRow.storage
+            this.intoForm.goodstype = this.currentRow.goodstype
+            this.intoForm.count = ''
+            this.intoForm.username = ''
+            this.intoForm.adminid = this.user.id
+            this.intoForm.remark = this.currentRow.remark+"（出库）"
+            this.intoForm.manage = 2
+        },
+        //出入库方法
+       Storage(){
+            this.$axios.post(this.$http+'/goods/storage',this.intoForm).then(res=>res.data).then(res=>{
+                //console.log(res)
+                if (res.code===200){
+                    this.$message({
+                        showClose: true,
+                        message: '成功( •̀ ω •́ )y',
+                        type: 'success'
+                    });
+                    this.$axios.post(this.$http+'/record/save',this.intoForm).then(res=>res.data).then(res=>{
+                        if(res.code===200){
+                            this.$message({
+                                showClose: true,
+                                message: '记录添加成功( •̀ ω •́ )y',
+                                type: 'success'
+                            });
+                            this.intoVisible=false
+                            this.reset();
+                        }
+                        else{
+                            this.$message({
+                                showClose: true,
+                                message: '记录添加失败,请重试(´･ω･`)?',
+                                type: 'error'
+                            });
+                        }
+                    })
+
+                }else {
+                    this.$message({
+                        showClose: true,
+                        message: '你需要的货物数量过多库存不够了,当前数量：'+res.data.count+' (´･ω･`)?',
+                        type: 'error'
+                    });
+                }
+            })
         },
         //重制查询框内容，并使页面返回初始状态
         reset(){
@@ -391,7 +564,7 @@ export default {
         //分页查询，当前为第几页
         handleCurrentChange(val) {
             console.log(`当前页: ${val}`);
-            this.pageNum=val
+            this.pageNum=val;
             if(this.name===''&&this.storage===''&&this.goodstype===''){
                 this.loadGet()
                 this.bool=true
@@ -399,7 +572,14 @@ export default {
             else {
                 this.loadPost()
             }
-        }
+        },
+        //多选取消选择
+        setCurrent(row) {
+            this.$refs.singleTable.setCurrentRow(row);
+        },
+        getCurrent(val){
+            this.currentRow = val;
+        },
 
     },
     watch:{
@@ -416,6 +596,7 @@ export default {
     //页面加载前先进行数据读取
     beforeMount() {
         this.loadGet();
+
         //this.loadPost();
     },
     // computed:{
