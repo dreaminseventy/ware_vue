@@ -224,6 +224,7 @@ export default {
             tableData: [],//查询的内容在这里展示
             pageSize: 10,
             pageNum: 1,
+            bool:true,
             total: 10,
             name: '',
             sex: '',
@@ -338,6 +339,7 @@ export default {
             this.account=''
             this.sex=''
             this.name=''
+            this.bool=true
             this.pageNum=1
             this.pageSize=10
             this.loadGet()
@@ -406,7 +408,7 @@ export default {
                         message: '删除成功( •̀ ω •́ )y',
                         type: 'success'
                     });
-                    this.loadGet()
+                    this.reset();
                 }else {
                     this.$message({
                         showClose: true,
@@ -458,11 +460,14 @@ export default {
                 if (res.code===200){
                     this.tableData = res.data
                     this.total=res.total
-                    this.$message({
-                        showClose: true,
-                        message: '已经找到啦~( •̀ ω •́ )y',
-                        type: 'success'
-                    });
+                    if(this.bool){
+                        this.$message({
+                            showClose: true,
+                            message: '已经找到啦~( •̀ ω •́ )y',
+                            type: 'success'
+                        });
+                        this.bool=false
+                    }
                 }
                 else {
                     this.$message({
@@ -480,6 +485,7 @@ export default {
             this.pageSize=val
             if(this.name===''&&this.sex===''&&this.account===''){
                 this.loadGet()
+                this.bool=true
             }
             else {
                 this.loadPost()
@@ -492,12 +498,24 @@ export default {
             this.pageNum=val
             if(this.name===''&&this.sex===''&&this.account===''){
                 this.loadGet()
+                this.bool=true
             }
             else {
                 this.loadPost()
             }
         }
 
+    },
+    watch:{
+        name(){
+            this.bool = true;
+        },
+        storage(){
+            this.bool=true;
+        },
+        goodstype(){
+            this.bool=true;
+        }
     },
     //页面加载前先进行数据读取
     beforeMount() {

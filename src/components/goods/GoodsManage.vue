@@ -253,6 +253,8 @@ export default {
         //重制查询框内容，并使页面返回初始状态
         reset(){
             this.name=''
+            this.goodstype = ''
+            this.storage=''
             this.pageNum=1
             this.pageSize=5
             this.bool=true
@@ -302,7 +304,7 @@ export default {
                         message: '删除成功( •̀ ω •́ )y',
                         type: 'success'
                     });
-                    this.loadGet()
+                    this.reset();
                 }else {
                     this.$message({
                         showClose: true,

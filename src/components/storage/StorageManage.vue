@@ -120,6 +120,7 @@ export default {
             menu:JSON.parse(sessionStorage.getItem('Menu')),
             pageSize: 5,
             pageNum: 1,
+            bool:true,
             total: 10,
             name: '',
             centerDialogVisible1: false,
@@ -184,6 +185,7 @@ export default {
             this.name=''
             this.pageNum=1
             this.pageSize=5
+            this.bool=true
             this.loadGet()
         },
         //编辑功能
@@ -227,7 +229,7 @@ export default {
                         message: '删除成功( •̀ ω •́ )y',
                         type: 'success'
                     });
-                    this.loadGet()
+                    this.reset();
                 }else {
                     this.$message({
                         showClose: true,
@@ -276,11 +278,14 @@ export default {
                 if (res.code===200){
                     this.tableData = res.data
                     this.total=res.total
-                    this.$message({
-                        showClose: true,
-                        message: '已经找到啦~( •̀ ω •́ )y',
-                        type: 'success'
-                    });
+                    if(this.bool){
+                        this.$message({
+                            showClose: true,
+                            message: '已经找到啦~( •̀ ω •́ )y',
+                            type: 'success'
+                        });
+                        this.bool=false
+                    }
                 }
                 else {
                     this.$message({
@@ -298,6 +303,7 @@ export default {
             this.pageSize=val
             if(this.name===''){
                 this.loadGet()
+                this.bool=true
             }
             else {
                 this.loadPost()
@@ -310,12 +316,24 @@ export default {
             this.pageNum=val
             if(this.name===''){
                 this.loadGet()
+                this.bool=true
             }
             else {
                 this.loadPost()
             }
         }
 
+    },
+    watch:{
+        name(){
+            this.bool = true;
+        },
+        storage(){
+            this.bool=true;
+        },
+        goodstype(){
+            this.bool=true;
+        }
     },
     //页面加载前先进行数据读取
     beforeMount() {

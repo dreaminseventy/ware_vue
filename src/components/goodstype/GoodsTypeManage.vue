@@ -116,6 +116,7 @@ export default {
             })
         };
         return {
+            bool:true,
             tableData: [],//查询的内容在这里展示
             menu:JSON.parse(sessionStorage.getItem('Menu')),
             pageSize: 5,
@@ -182,6 +183,7 @@ export default {
         //重制查询框内容，并使页面返回初始状态
         reset(){
             this.name=''
+            this.bool=true
             this.pageNum=1
             this.pageSize=5
             this.loadGet()
@@ -227,7 +229,7 @@ export default {
                         message: '删除成功( •̀ ω •́ )y',
                         type: 'success'
                     });
-                    this.loadGet()
+                    this.reset();
                 }else {
                     this.$message({
                         showClose: true,
@@ -276,11 +278,14 @@ export default {
                 if (res.code===200){
                     this.tableData = res.data
                     this.total=res.total
-                    this.$message({
-                        showClose: true,
-                        message: '已经找到啦~( •̀ ω •́ )y',
-                        type: 'success'
-                    });
+                    if(this.bool){
+                        this.$message({
+                            showClose: true,
+                            message: '已经找到啦~( •̀ ω •́ )y',
+                            type: 'success'
+                        });
+                        this.bool=false
+                    }
                 }
                 else {
                     this.$message({
@@ -297,7 +302,8 @@ export default {
             this.pageNum=1
             this.pageSize=val
             if(this.name===''){
-                this.loadGet()
+                this.loadGet();
+                this.bool=true;
             }
             else {
                 this.loadPost()
@@ -309,13 +315,25 @@ export default {
             console.log(`当前页: ${val}`);
             this.pageNum=val
             if(this.name===''){
-                this.loadGet()
+                this.loadGet();
+                this.bool=true
             }
             else {
                 this.loadPost()
             }
         }
 
+    },
+    watch:{
+        name(){
+            this.bool = true;
+        },
+        storage(){
+            this.bool=true;
+        },
+        goodstype(){
+            this.bool=true;
+        }
     },
     //页面加载前先进行数据读取
     beforeMount() {
