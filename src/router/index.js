@@ -50,7 +50,7 @@ const createRouter = ()=>new VueRouter({
 
 const router = createRouter();
 export function  resetRouter(){
-  const newRouter = createRouter();
+  let newRouter = createRouter();
   router.matcher = newRouter.matcher;
 }
 

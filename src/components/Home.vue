@@ -61,7 +61,7 @@ export default {
             //console.log("22222:"+this.user)
             this.$axios.get(this.$http+"/menu/list?roleId="+this.user.roleId).then(res=>res.data).then(res=>{
                 sessionStorage.setItem('Menu',JSON.stringify(res.data))
-                //console.log(res)
+                //console.log("第一次"+JSON.stringify(res))
                 this.$store.commit('setMenu',res.data)
             })
         }

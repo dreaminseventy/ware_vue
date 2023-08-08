@@ -1,6 +1,6 @@
 import vue from 'vue'
 import Vuex from 'vuex'
-import router, {resetRouter}  from "../router";
+import router , {resetRouter} from "../router";
 vue.use(Vuex)
     //
 function addNewRoute(menuList) {
@@ -15,8 +15,9 @@ function addNewRoute(menuList) {
             component: () => import('@/components/' + menu.menucomponent)
         }
         router.addRoute('WareIndex', childRoute)
+        //console.log("当前在路由中的路由"+JSON.stringify(router.options.routes))
     })
-    //console.log(router.options.routes)
+
 }
 export default new Vuex.Store({
     state:{
@@ -26,6 +27,9 @@ export default new Vuex.Store({
         setMenu(state,menuList){
             state.menu = menuList;
             addNewRoute(menuList)
+        },
+        setRoute(menuList){
+            addNewRoute(menuList);
         }
     },
     getters:{

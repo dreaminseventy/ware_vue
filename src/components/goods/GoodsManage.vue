@@ -14,10 +14,9 @@
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
             <el-button type="warning" @click = "reset">重置</el-button>
             <el-button type="info" @click="setCurrent">取消选择</el-button>
-            <el-button type="success" style="margin-left: 268px" @click="addNew" >新增</el-button>
-            <el-button type="success" @click="into" >入库</el-button>
+            <el-button type="success" style="margin-left: 268px" @click="into" >入库</el-button>
             <el-button type="success" @click="output" >出库</el-button>
-
+            <el-button type="success"  @click="addNew" v-if="user.roleId!==0">新增</el-button>
 
         </div>
         <!--中间查询数据展示界面-->

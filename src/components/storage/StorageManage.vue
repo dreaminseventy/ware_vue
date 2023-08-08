@@ -7,7 +7,7 @@
                       suffix-icon="el-icon-search" style="width: 200px;padding-left: 10px"></el-input>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
             <el-button type="warning" @click = "reset">重置</el-button>
-            <el-button type="success" style="margin-left: 485px" @click="addNew" >新增</el-button>
+            <el-button type="success" style="margin-left: 485px" @click="addNew"  v-if="user.roleId!==0">新增</el-button>
         </div>
         <!--中间查询数据展示界面-->
         <el-table :data="tableData"
@@ -22,7 +22,7 @@
             </el-table-column>
             <el-table-column prop="remark" label="备注">
             </el-table-column>
-            <el-table-column prop="option" label="操作">
+            <el-table-column prop="option" label="操作"  v-if="user.roleId!==0">
                 <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="showUpdate(scope.row)">编辑</el-button>
                     <!--button包裹在气泡框当中-->
@@ -30,7 +30,7 @@
                                    @confirm="deleteUser(scope.row.id)"
                                    style="margin-left: 10px"
                     >
-                        <el-button slot="reference" size="small" type="danger" >删除</el-button>
+                        <el-button slot="reference" size="small" type="danger"  >删除</el-button>
                     </el-popconfirm>
                 </template>
             </el-table-column>
@@ -118,6 +118,7 @@ export default {
         return {
             tableData: [],//查询的内容在这里展示
             menu:JSON.parse(sessionStorage.getItem('Menu')),
+            user:JSON.parse(sessionStorage.getItem('User')),
             pageSize: 5,
             pageNum: 1,
             bool:true,
