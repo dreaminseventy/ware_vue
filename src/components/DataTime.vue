@@ -12,7 +12,6 @@ export default {
     name: "DataTime",
     data() {
         return {
-
             currentDate: '',
             currentTime: ''
         }

@@ -20,7 +20,6 @@
             </el-select>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
             <el-button type="warning" @click = "reset">重置</el-button>
-            <el-button type="success" style="margin-left: 500px" @click="addNew" >新增</el-button>
         </div>
         <!--中间查询数据展示界面-->
         <el-table :data="tableData"
@@ -64,18 +63,6 @@
                             disable-transitions>{{scope.row.isValid === 'Y' ? '启用' : '禁用'}}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="option" label="操作">
-                <template slot-scope="scope">
-                    <el-button size="small" type="primary" @click="showUpdate(scope.row)">编辑</el-button>
-                    <!--button包裹在气泡框当中-->
-                    <el-popconfirm title="真的要删除吗Σ(っ °Д °;)っ"
-                                   @confirm="deleteUser(scope.row.id)"
-                                   style="margin-left: 10px"
-                    >
-                        <el-button slot="reference" size="small" type="danger" >删除</el-button>
-                    </el-popconfirm>
-                </template>
-            </el-table-column>
         </el-table>
         <!--分页-->
         <el-pagination
@@ -87,112 +74,6 @@
                 layout="total, sizes, prev, pager, next, jumper"
                 :total="total">
         </el-pagination>
-        <!--新增界面-->
-        <el-dialog
-                title="提示"
-                :visible.sync="centerDialogVisible"
-                width="30%"
-                center>
-            <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-                <el-form-item label="账号" prop="account">
-                    <el-col :span="20">
-                        <el-input v-model="form.account"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="用户名" prop="name">
-                    <el-col :span="20">
-                        <el-input v-model="form.name"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-col :span="20">
-                        <el-input v-model="form.password"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="年龄" prop="age">
-                    <el-col :span="20">
-                        <el-input v-model="form.age"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="性别" prop="sex">
-                    <el-radio-group v-model="form.sex">
-                        <el-radio label="1">男</el-radio>
-                        <el-radio label="2">女</el-radio>
-                        <el-radio label="3">沃尔玛购物袋</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="电话" prop="phone">
-                    <el-col :span="20">
-                        <el-input v-model="form.phone"></el-input>
-                    </el-col>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="centerDialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="save">确 定</el-button>
-            </span>
-        </el-dialog>
-        <!--编辑界面-->
-        <el-dialog
-                title="提示"
-                :visible.sync="centerDialogVisible1"
-                width="30%"
-                center>
-            <el-form ref="form1" :model="form1" :rules="rules" label-width="80px">
-                <el-form-item label="账号" prop="account">
-                    <el-col :span="20">
-                        <el-input v-model="form1.account"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="用户名" prop="name">
-                    <el-col :span="20">
-                        <el-input v-model="form1.name"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-col :span="20">
-                        <el-input v-model="form1.password"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="年龄" prop="age">
-                    <el-col :span="20">
-                        <el-input v-model="form1.age"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="性别" prop="sex">
-                    <el-radio-group v-model="form1.sex">
-                        <el-radio label="1">男</el-radio>
-                        <el-radio label="2">女</el-radio>
-                        <el-radio label="3">沃尔玛购物袋</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="电话" prop="phone">
-                    <el-col :span="20">
-                        <el-input v-model="form1.phone"></el-input>
-                    </el-col>
-                </el-form-item>
-                <el-form-item label="权限" prop="roleId">
-                    <el-radio-group v-model="form1.roleId">
-                        <el-radio label="0">用户</el-radio>
-                        <el-radio label="1">管理员</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="是否启用" prop="isValid">
-                    <el-tooltip :content=isValidValue placement="top">
-                        <el-switch
-                                @click.native="change"
-                                v-model="form1.isValid"
-                                active-color="#13ce66"
-                                inactive-color="#ff4949">
-                        </el-switch>
-                    </el-tooltip>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="centerDialogVisible1 = false">取 消</el-button>
-                <el-button type="primary" @click="update">确 定</el-button>
-            </span>
-        </el-dialog>
     </div>
 </template>
 
@@ -201,27 +82,6 @@ export default {
     name: "Select",
     data() {
         //对年龄大于150的进行重新输入
-        let checkAge = (rule,value,callback)=>{
-            if(value>150){
-                callback(new Error('太老了,请重试'));
-            }else {
-                callback();
-            }
-        };
-        //用于对账户是否以存在进行查询
-        let checkDuplicate =(rule,value,callbacke)=>{
-            if(this.form.id){
-                return callbacke
-            }
-            this.$axios.get(this.$http+'/user/findByAccount?account='+this.form.account).then(res=>res.data).then(res=>{
-                //console.log(res)
-                if (res.code!==200){
-                    return callbacke
-                }else {
-                    return callbacke(new Error('账号已存在'))
-                }
-            })
-        };
         return {
             tableData: [],//查询的内容在这里展示
             pageSize: 5,
@@ -248,94 +108,10 @@ export default {
                     value: '',
                     label: ''
                 }
-            ],
-            centerDialogVisible1: false,
-            centerDialogVisible: false,//将新增表单设为不可见
-            //设置表单的form参数
-            form: {
-                account: '',
-                name: '',
-                password: '',
-                age: '',
-                sex: '3',
-                roleId:0,
-                phone: ''
-            },
-            form1: {
-                id:'',
-                account: '',
-                name: '',
-                password: '',
-                age: '',
-                sex: '3',
-                phone: '',
-                roleId:'',
-                isValid:''
-            },
-            //为新增添加规则
-            rules: {
-                account: [
-                    {required: true, message: '请输入账号', trigger: 'blur'},
-                    {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'},
-                    {validator:checkDuplicate,trigger: 'blur'}
-                ],
-                name: [
-                    {required: true, message: '请输入用户名', trigger: 'blur'},
-                    {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'}
-                ],
-                password: [
-                    {required: true, message: '请输入密码', trigger: 'blur'},
-                    {min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur'}
-                ],
-                age: [
-                    {required: true, message: '请输入年龄', trigger: 'blur'},
-                    {min: 1, max: 3, message: '长度在 1 到 3 个字符', trigger: 'blur'},
-                    {pattern: /^([1-9][0-9]*){1,3}$/,message: '年龄必须为正整数',trigger: 'blur'},
-                    {validator:checkAge,trigger: 'blur'}
-                ],
-                phone: [
-                    {required: true, message: '手机号码不能为空', trigger: 'blur'},
-                    {pattern: /^1[3-9][0-9]\d{8}$/,message: '请输入正确的手机号码',trigger: 'blur'}
-                ]
-            },
-            isValidValue:'已启用'
+            ]
         }
     },
     methods:{
-        //保存新增用户方法
-        save(){
-            this.centerDialogVisible=false
-            //console.log(this.form)
-            this.$axios.post(this.$http+"/user/save ", this.form).then(res=>res.data).then(res=>{
-                //console.log(res)
-                if (res.code===200){
-                    this.$message({
-                        showClose: true,
-                        message: '成功新增用户( •̀ ω •́ )y',
-                        type: 'success'
-                    });
-                    this.loadGet()
-                }
-                else {
-                    this.$message({
-                        showClose: true,
-                        message: '添加用户失败，请重试(っ °Д °;)っ',
-                        type: 'error'
-                    });
-                }
-            })
-        },
-        //清除新增界面内容
-        resetForm() {
-            this.$refs.form.resetFields();
-        },
-        //显示新增界面，同时清除原有数据
-        addNew(){
-            this.centerDialogVisible=true
-            this.$nextTick(()=>
-                this.resetForm()
-            )
-        },
         //重制查询框内容，并使页面返回初始状态
         reset(){
             this.account=''
@@ -346,79 +122,6 @@ export default {
             this.pageSize=10
             this.loadGet()
 
-        },
-        //编辑功能
-        //1.展示当前列中的内容
-        showUpdate(row){
-            //console.log(row)
-            this.form1.id = row.id
-            this.form1.account = row.account
-            this.form1.name = row.name
-            this.form1.password =''
-            this.form1.age = row.age
-            this.form1.sex = row.sex+''//将sex转成string类型
-            this.form1.phone = row.phone
-            this.form1.roleId = row.roleId+''//将roleId转成string类型
-            this.form1.isValid = row.isValid === 'Y';
-            this.change()
-            this.centerDialogVisible1=true
-        },
-        //2.改变启用状态栏信息
-        change(){
-            if(this.form1.isValid){
-                this.isValidValue='已启用'
-            }else {
-                this.isValidValue='已禁用'
-            }
-
-        },
-        //3.修改信息
-        update(){
-            if(this.form1.isValid ){
-                this.form1.isValid='Y'
-            }
-            else {
-                this.form1.isValid='N'
-            }
-            this.$axios.put(this.$http+'/user/update',this.form1).then(res=>res.data).then(res=>{
-                //console.log(res)
-                if (res.code===200){
-                    this.$message({
-                        showClose: true,
-                        message: '成功修改用户( •̀ ω •́ )y',
-                        type: 'success'
-                    });
-                    this.centerDialogVisible1=false
-                    this.reset();
-                }else {
-                    this.$message({
-                        showClose: true,
-                        message: '修改用户失败，请重试(っ °Д °;)っ',
-                        type: 'error'
-                    });
-                }
-            })
-        },
-        //删除功能
-        deleteUser(id){
-            //console.log(id)
-            this.$axios.delete(this.$http+'/user/delete?id='+id).then(res=>res.data).then(res=>{
-                //console.log(res)
-                if (res.code===200){
-                    this.$message({
-                        showClose: true,
-                        message: '删除成功( •̀ ω •́ )y',
-                        type: 'success'
-                    });
-                    this.reset();
-                }else {
-                    this.$message({
-                        showClose: true,
-                        message: '删除失败，请重试(╯‵□′)╯︵┻━┻',
-                        type: 'error'
-                    });
-                }
-            })
         },
         //主要查询（使用get查询全部数据,包含分页查询）
         loadGet(){
@@ -506,6 +209,7 @@ export default {
                 this.loadPost()
             }
         },
+        //单选取值
         getCurrent(val){
             // this.currentRow = val;
             this.$emit("selectUser",val)

@@ -21,7 +21,7 @@ const constantRoutes = [
   {
     path: '/',
     name: 'login',
-    component: ()=>import('../components/Login.vue')
+    component: ()=>import('../components/login/NewLogin.vue')
   },
   {
     path: '/WareIndex',

@@ -67,7 +67,7 @@ export default {
         return {
             tableData: [],//查询的内容在这里展示
             bool:true,
-            menu:JSON.parse(sessionStorage.getItem('Menu')),
+            user:JSON.parse(sessionStorage.getItem('User')),
             pageSize: 5,
             pageNum: 1,
             total: 10,
@@ -118,6 +118,8 @@ export default {
                 params:{
                     pageNum:this.pageNum,
                     pageSize:this.pageSize,
+                    roleId:this.user.roleId,
+                    userId:this.user.id
                 }
             }).then(res=>res.data).then(res=>{
                 //console.log(res)
@@ -216,16 +218,7 @@ export default {
         this.loadGet();
         //this.loadPost();
     },
-    // computed:{
-    //     ...mapGetters(['getMenu']),
-    //
-    // },
-    // watch:{
-    //     getMenu(){
-    //         console.log('我执行了'+this.menu)
-    //         this.$store.commit("setMenu",this.menu)
-    //     }
-    // }
+
 }
 </script>
 

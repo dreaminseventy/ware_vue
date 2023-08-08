@@ -19,7 +19,7 @@
                   </el-form-item>
                   <el-form-item >
                       <el-button type="primary" @click="login"
-                                 :disabled="login_disabled">确定</el-button>
+                                 :disabled="login_disabled">登录</el-button>
                   </el-form-item>
               </el-form>
           </div>
@@ -39,7 +39,6 @@ export default {
                 account:'',
                 password:''
             },
-            //user:{},
             rules:{
                 account:[
                     {required:true,message:'请输入账号',trigger:'blur'}

@@ -14,9 +14,19 @@
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
             <el-button type="warning" @click = "reset">重置</el-button>
             <el-button type="info" @click="setCurrent">取消选择</el-button>
-            <el-button type="success" style="margin-left: 268px" @click="into" >入库</el-button>
-            <el-button type="success" @click="output" >出库</el-button>
-            <el-button type="success"  @click="addNew" v-if="user.roleId!==0">新增</el-button>
+<!--            <el-button type="success" @click="into" >入库</el-button>-->
+<!--            <el-button type="success" @click="output" >出库</el-button>-->
+            <el-dropdown style="margin-left: 260px" >
+                <el-button type="primary">
+                    管理<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item icon="el-icon-circle-plus" @click.native="into">入库</el-dropdown-item>
+                    <el-dropdown-item icon="el-icon-remove" @click.native="output">出库</el-dropdown-item>
+                    <el-dropdown-item icon="el-icon-remove" v-if="user.roleId!==0">申请</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+            <el-button type="success" style="margin-left: 10px" @click="addNew" v-if="user.roleId!==0">新增</el-button>
 
         </div>
         <!--中间查询数据展示界面-->
