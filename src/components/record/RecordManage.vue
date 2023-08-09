@@ -23,21 +23,27 @@
             </el-table-column>
             <el-table-column prop="id" label="ID" width="60" >
             </el-table-column>
-            <el-table-column prop="name" label="货物名" width="160">
+            <el-table-column prop="name" label="货物名" width="150">
             </el-table-column>
-            <el-table-column prop="storage" label="关联仓库" width="160">
+            <el-table-column prop="storage" label="关联仓库" width="150">
             </el-table-column>
-            <el-table-column prop="goodstype" label="货物分类" width="160">
+            <el-table-column prop="goodstype" label="货物分类" width="150">
             </el-table-column>
-            <el-table-column prop="adminname" label="操作人" width="160">
+            <el-table-column prop="adminname" label="操作人" width="150">
             </el-table-column>
-            <el-table-column prop="username" label="申请人" width="160">
+            <el-table-column prop="username" label="申请人" width="150">
             </el-table-column>
             <el-table-column prop="count" label="货物数量" width="70">
             </el-table-column>
             <el-table-column prop="createtime" label="操作时间" width="160"
                 :formatter = 'formatTime'
             >
+            </el-table-column>
+            <el-table-column prop="manage" label="入库/出库" width="100">
+                <template slot-scope="scope">
+                    <el-tag v-if="scope.row.manage === 1" type="warning" disable-transitions>入库</el-tag>
+                    <el-tag v-else-if="scope.row.manage === 2" type="success" disable-transitions>出库</el-tag>
+                </template>
             </el-table-column>
             <el-table-column prop="remark" label="备注">
             </el-table-column>
@@ -98,8 +104,7 @@ export default {
     methods:{
         formatTime(row){
             const createTime = row.createtime;
-            const formattedTime = moment(createTime).format('yyyy-MM-DD hh:mm:ss')
-            return formattedTime;
+            return moment(createTime).format('yyyy-MM-DD hh:mm:ss');
         },
 
         //重制查询框内容，并使页面返回初始状态
