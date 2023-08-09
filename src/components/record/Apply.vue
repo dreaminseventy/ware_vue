@@ -12,7 +12,7 @@
                       @keydown.enter.native="loadPost"
                       suffix-icon="el-icon-search" style="width: 200px;padding-left: 10px"></el-input>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
-            <el-button type="warning" @click = "reset">刷新</el-button>
+            <el-button type="warning" @click = "reset">刷新申请</el-button>
         </div>
         <!--中间查询数据展示界面-->
         <el-table :data="tableData"
@@ -29,8 +29,6 @@
             </el-table-column>
             <el-table-column prop="goodstype" label="货物分类" width="160">
             </el-table-column>
-            <el-table-column prop="adminname" label="操作人" width="160">
-            </el-table-column>
             <el-table-column prop="username" label="申请人" width="160">
             </el-table-column>
             <el-table-column prop="count" label="货物数量" width="70">
@@ -39,7 +37,19 @@
                 :formatter = 'formatTime'
             >
             </el-table-column>
+<!--    没有传数据        <el-table-column prop="manage" label="入库/出库" width="130">-->
+<!--                <template slot-scope="scope">-->
+<!--                    <el-tag v-if="scope.row.manage === 1" type="warning" disable-transitions>入库</el-tag>-->
+<!--                    <el-tag v-else-if="scope.row.manage === 2" type="success" disable-transitions>出库</el-tag>-->
+<!--                </template>-->
+<!--            </el-table-column>-->
             <el-table-column prop="remark" label="备注">
+            </el-table-column>
+            <el-table-column prop="option" label="操作">
+                <template slot-scope="scope">
+                    <el-button size="small" type="primary" @click="passApply(scope.row)" >通过</el-button>
+                    <el-button slot="reference" size="small" type="danger" >驳回</el-button>
+                </template>
             </el-table-column>
         </el-table>
         <!--分页-->
@@ -74,34 +84,26 @@ export default {
             name: '',
             storage:'',
             goodstype:'',
-            centerDialogVisible1: false,
-            centerDialogVisible: false,//将新增表单设为不可见
-            //设置表单的form参数
-            form: {
-                id: '',
-                name: '',
-                remark: '',
-                goodstype:'',
-                storage:'',
-                count:''
-            },
-            form1: {
+            intoForm:{
                 id:'',
-                name: '',
-                remark: '',
-                goodstype:'',
+                name:'',
+                username:'',
+                userid:'',
+                adminid:'',
                 storage:'',
-                count:''
+                goodstype:'',
+                count:'',
+                remark:'',
+                manage:'',
+                tempVal:{},
             },
         }
     },
     methods:{
         formatTime(row){
             const createTime = row.createtime;
-            const formattedTime = moment(createTime).format('yyyy-MM-DD hh:mm:ss')
-            return formattedTime;
+            return moment(createTime).format('yyyy-MM-DD hh:mm:ss');
         },
-
         //重制查询框内容，并使页面返回初始状态
         reset(){
             this.name=''
@@ -114,12 +116,10 @@ export default {
         },
         //主要查询（使用get查询全部数据,包含分页查询）
         loadGet(){
-            this.$axios.get(this.$http+'/record/page',{
+            this.$axios.get(this.$http+'/apply/page',{
                 params:{
                     pageNum:this.pageNum,
                     pageSize:this.pageSize,
-                    roleId:this.user.roleId,
-                    userId:this.user.id
                 }
             }).then(res=>res.data).then(res=>{
                 //console.log(res)
@@ -151,7 +151,7 @@ export default {
             }
 
             //console.log(SelectBean)
-            this.$axios.post(this.$http+"/record/list1", SelectBean).then(res=>res.data).then(res=>{
+            this.$axios.post(this.$http+"/apply/list1", SelectBean).then(res=>res.data).then(res=>{
                 //console.log((res))
                 if (res.code===200){
                     this.tableData = res.data
@@ -206,7 +206,74 @@ export default {
             else {
                 this.loadPost()
             }
-        }
+        },
+        //删除功能
+        deleteUser(id){
+            //console.log(id)
+            this.$axios.delete(this.$http+'/user/delete?id='+id).then(res=>res.data).then(res=>{
+                //console.log(res)
+                if (res.code===200){
+                    this.$message({
+                        showClose: true,
+                        message: '删除成功( •̀ ω •́ )y',
+                        type: 'success'
+                    });
+                    this.reset();
+                }else {
+                    this.$message({
+                        showClose: true,
+                        message: '删除失败，请重试(╯‵□′)╯︵┻━┻',
+                        type: 'error'
+                    });
+                }
+            })
+        },
+        //出入库方法
+        passApply(row){
+            this.intoForm.id = row.id
+            this.intoForm.name = row.name
+            this.intoForm.storage = row.storage
+            this.intoForm.goodstype = row.goodstype
+            this.intoForm.count = row.count
+            this.intoForm.userid = ''
+            this.intoForm.adminid = this.user.id
+            this.intoForm.remark = row.remark+"（出库）"
+
+            this.$axios.post(this.$http+'/goods/storage',this.intoForm).then(res=>res.data).then(res=>{
+                //console.log(res)
+                if (res.code===200){
+                    this.$message({
+                        showClose: true,
+                        message: '成功( •̀ ω •́ )y',
+                        type: 'success'
+                    });
+                    this.$axios.post(this.$http+'/record/save',this.intoForm).then(res=>res.data).then(res=>{
+                        if(res.code===200){
+                            this.$message({
+                                showClose: true,
+                                message: '记录添加成功( •̀ ω •́ )y',
+                                type: 'success'
+                            });
+                            this.intoVisible=false
+                            this.reset();
+                        }
+                        else{
+                            this.$message({
+                                showClose: true,
+                                message: '记录添加失败,请重试(´･ω･`)?',
+                                type: 'error'
+                            });
+                        }
+                    })
+                }else {
+                    this.$message({
+                        showClose: true,
+                        message: '你需要的货物数量过多库存不够了,当前数量：'+res.data.count+' (´･ω･`)?',
+                        type: 'error'
+                    });
+                }
+            })
+        },
 
     },
     watch:{

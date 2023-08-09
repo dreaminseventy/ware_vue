@@ -12,10 +12,11 @@
                       @keydown.enter.native="loadPost"
                       suffix-icon="el-icon-search" style="width: 200px;padding-left: 10px"></el-input>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
-            <el-button type="warning" @click = "reset">重置</el-button>
+            <el-button type="warning" @click = "reset">刷新</el-button>
             <el-button type="info" @click="setCurrent">取消选择</el-button>
 <!--            <el-button type="success" @click="into" >入库</el-button>-->
 <!--            <el-button type="success" @click="output" >出库</el-button>-->
+            <el-badge :is-dot='isDot'>
             <el-dropdown style="margin-left: 260px" >
                 <el-button type="primary">
                     管理<i class="el-icon-arrow-down el-icon--right"></i>
@@ -23,11 +24,25 @@
                 <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item icon="el-icon-circle-plus" @click.native="into">入库</el-dropdown-item>
                     <el-dropdown-item icon="el-icon-remove" @click.native="output">出库</el-dropdown-item>
-                    <el-dropdown-item icon="el-icon-remove" v-if="user.roleId!==0">申请</el-dropdown-item>
+
+                    <el-dropdown-item icon="el-icon-remove" v-if="user.roleId!==0" @click.native="openApply">申请
+                        <el-badge :value='applyNum' v-if="applyNum>0" size="mini"/>
+                    </el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
+            </el-badge>
             <el-button type="success" style="margin-left: 10px" @click="addNew" v-if="user.roleId!==0">新增</el-button>
-
+            <el-dialog
+                width="90%"
+                title="用户申请"
+                :visible.sync="applyVisible"
+                append-to-body>
+                <Apply></Apply>
+                <span slot="footer" class="dialog-footer">
+                <el-button @click="applyVisible=false">取 消</el-button>
+                <el-button type="primary" >确 定</el-button>
+            </span>
+            </el-dialog>
         </div>
         <!--中间查询数据展示界面-->
         <el-table :data="tableData"
@@ -211,11 +226,13 @@
 <script>
 
 
+
 import Select from "@/components/user/Select.vue";
+import Apply from "@/components/record/Apply.vue";
 
 export default {
     name: "GoodsManage",
-    components: {Select},
+    components: {Select,Apply},
     data() {
         //用于对账户是否以存在进行查询
         let checkCount = (rule, value, callback) => {
@@ -251,7 +268,9 @@ export default {
         // };
         return {
             tableData: [],//查询的内容在这里展示
-            bool:true,
+            bool:true,//控制是否输出查询成功的msg
+            applyNum:0,
+            isDot:false,//将新增表单设为不可见
             menu:JSON.parse(sessionStorage.getItem('Menu')),
             user:JSON.parse(sessionStorage.getItem('User')),
             pageSize: 5,
@@ -260,10 +279,11 @@ export default {
             name: '',
             storage:'',
             goodstype:'',
-            intoVisible:false,
-            innerVisible:false,
-            centerDialogVisible1: false,
-            centerDialogVisible: false,//将新增表单设为不可见
+            applyVisible:false,//将申请界面设为不可见
+            intoVisible:false,//将入库/出库界面设为不可见
+            innerVisible:false,//将入库/出库界面的申请人选择界面设为不可见
+            centerDialogVisible1: false,//将新增表单设为不可见(form1)
+            centerDialogVisible: false,//将新增表单设为不可见(form)
             //设置表单的form参数
             form: {
                 id: '',
@@ -550,6 +570,13 @@ export default {
                 if (res.code===200){
                     this.tableData = res.data
                     this.total=res.total
+                    if (res.total===0){
+                        this.$message({
+                            showClose: true,
+                            message: '暂无相关数据(⊙ˍ⊙)',
+                            type: 'warning'
+                        });
+                    }else
                     if(this.bool){
                     this.$message({
                         showClose: true,
@@ -574,8 +601,8 @@ export default {
             this.pageNum=1
             this.pageSize=val
             if(this.name===''&&this.storage===''&&this.goodstype===''){
-                this.loadGet()
-                this.bool=true
+                this.loadGet();
+                this.bool=true;
             }
             else {
                 this.loadPost()
@@ -587,14 +614,14 @@ export default {
             console.log(`当前页: ${val}`);
             this.pageNum=val;
             if(this.name===''&&this.storage===''&&this.goodstype===''){
-                this.loadGet()
-                this.bool=true
+                this.loadGet();
+                this.bool=true;
             }
             else {
                 this.loadPost()
             }
         },
-        //多选取消选择
+        //取消选择
         setCurrent(row) {
             this.$refs.singleTable.setCurrentRow(row);
         },
@@ -613,7 +640,25 @@ export default {
         },
         selectUser(val){
             this.tempVal = val
-        }
+        },
+        //获取申请
+        applyGet(){
+            this.$axios.get(this.$http+'/apply/page').then(res=>res.data).then(res=>{
+                //console.log(res)
+                if (res.code===200){
+                    this.applyNum= res.total
+                    if (res.total>0){
+                        this.isDot=true
+                    }
+                }else {
+                    alert("获取申请数据失败")
+                }
+            })
+        },
+        openApply(){
+            this.applyVisible=true
+        },
+
     },
     watch:{
         name(){
@@ -629,9 +674,10 @@ export default {
     //页面加载前先进行数据读取
     beforeMount() {
         this.loadGet();
-
+        this.applyGet();
         //this.loadPost();
     },
+
     // computed:{
     //     ...mapGetters(['getMenu']),
     //
@@ -649,4 +695,5 @@ export default {
 .el-main{
     padding: 5px;
 }
+
 </style>

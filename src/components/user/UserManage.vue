@@ -19,7 +19,7 @@
                 </el-option>
             </el-select>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
-            <el-button type="warning" @click = "reset">重置</el-button>
+            <el-button type="warning" @click = "reset">刷新</el-button>
             <el-button type="success" style="margin-left: 500px" @click="addNew" >新增</el-button>
         </div>
         <!--中间查询数据展示界面-->
@@ -460,6 +460,13 @@ export default {
                 if (res.code===200){
                     this.tableData = res.data
                     this.total=res.total
+                    if (res.total===0){
+                        this.$message({
+                            showClose: true,
+                            message: '暂无相关数据(⊙ˍ⊙)',
+                            type: 'warning'
+                        });
+                    }else
                     if(this.bool){
                         this.$message({
                             showClose: true,

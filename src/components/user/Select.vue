@@ -19,7 +19,7 @@
                 </el-option>
             </el-select>
             <el-button type="primary" style="margin-left: 10px" @click="loadPost" >查询</el-button>
-            <el-button type="warning" @click = "reset">重置</el-button>
+            <el-button type="warning" @click = "reset">刷新</el-button>
         </div>
         <!--中间查询数据展示界面-->
         <el-table :data="tableData"
@@ -28,15 +28,15 @@
                   highlight-current-row
                   border style="width: 100%"
         >
-            <el-table-column  type="index" width="50" label="序号">
+            <el-table-column  type="index" width="60" label="序号">
             </el-table-column>
             <el-table-column prop="id" label="ID" width="60" >
             </el-table-column>
-            <el-table-column prop="account" label="账号" width="170" >
+            <el-table-column prop="account" label="账号" width="210" >
             </el-table-column>
-            <el-table-column prop="name" label="用户名" width="170">
+            <el-table-column prop="name" label="用户名" width="210">
             </el-table-column>
-            <el-table-column prop="password" label="密码" width="170">
+            <el-table-column prop="password" label="密码" width="210">
             </el-table-column>
             <el-table-column prop="age" label="年龄" width="80">
             </el-table-column>
@@ -47,22 +47,23 @@
                     <el-tag v-if="scope.row.sex === 3" type="info" disable-transitions>购物袋</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="phone" label="电话号码" width="180">
+            <el-table-column prop="phone" label="电话号码" width="200">
             </el-table-column>
-            <el-table-column prop="roleId" label="角色权限" width="130">
+            <el-table-column prop="roleId" label="角色权限" width="150">
                 <template slot-scope="scope">
                     <el-tag v-if="scope.row.roleId === 1" type="warning" disable-transitions>管理员</el-tag>
                     <el-tag v-else-if="scope.row.roleId === 2" type="danger" disable-transitions>超级管理员</el-tag>
                     <el-tag v-if="scope.row.roleId === 0" type="primary" disable-transitions>用户</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="isValid" label="是否启用" width="100">
+            <el-table-column prop="isValid" label="是否启用">
                 <template slot-scope="scope">
                     <el-tag
-                            :type="scope.row.isValid === 'Y' ? 'success' : 'danger'"
-                            disable-transitions>{{scope.row.isValid === 'Y' ? '启用' : '禁用'}}</el-tag>
+                        :type="scope.row.isValid === 'Y' ? 'success' : 'danger'"
+                        disable-transitions>{{scope.row.isValid === 'Y' ? '启用' : '禁用'}}</el-tag>
                 </template>
             </el-table-column>
+
         </el-table>
         <!--分页-->
         <el-pagination
@@ -81,7 +82,6 @@
 export default {
     name: "Select",
     data() {
-        //对年龄大于150的进行重新输入
         return {
             tableData: [],//查询的内容在这里展示
             pageSize: 5,
@@ -165,6 +165,13 @@ export default {
                 if (res.code===200){
                     this.tableData = res.data
                     this.total=res.total
+                    if (res.total===0){
+                        this.$message({
+                            showClose: true,
+                            message: '暂无相关数据(⊙ˍ⊙)',
+                            type: 'warning'
+                        });
+                    }else
                     if(this.bool){
                         this.$message({
                             showClose: true,
