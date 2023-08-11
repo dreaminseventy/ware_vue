@@ -17,7 +17,7 @@
 <!--            <el-button type="success" @click="into" >入库</el-button>-->
 <!--            <el-button type="success" @click="output" >出库</el-button>-->
             <el-badge :is-dot='isDot'>
-            <el-dropdown style="margin-left: 260px" >
+            <el-dropdown style="margin-left: 360px" >
                 <el-button type="primary">
                     管理<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
@@ -25,7 +25,7 @@
                     <el-dropdown-item icon="el-icon-circle-plus" @click.native="into">入库</el-dropdown-item>
                     <el-dropdown-item icon="el-icon-remove" @click.native="output">出库</el-dropdown-item>
 
-                    <el-dropdown-item icon="el-icon-remove" v-if="user.roleId!==0" @click.native="openApply">申请
+                    <el-dropdown-item icon="el-icon-remove" v-if="user.roleId!==0" @click.native="applyVisible=true">申请
                         <el-badge :value='applyNum' v-if="applyNum>0" size="mini"/>
                     </el-dropdown-item>
                 </el-dropdown-menu>
@@ -40,7 +40,7 @@
                 <Apply></Apply>
                 <span slot="footer" class="dialog-footer">
                 <el-button @click="applyVisible=false">取 消</el-button>
-                <el-button type="primary" >确 定</el-button>
+                <el-button type="primary" @click="applyClose">确 定</el-button>
             </span>
             </el-dialog>
         </div>
@@ -63,11 +63,11 @@
             </el-table-column>
             <el-table-column prop="goodstype" label="货物分类" width="160">
             </el-table-column>
-            <el-table-column prop="count" label="货物数量" width="70">
+            <el-table-column prop="count" label="货物数量" width="80">
             </el-table-column>
-            <el-table-column prop="remark" label="备注" width="450">
+            <el-table-column prop="remark" label="备注">
             </el-table-column>
-            <el-table-column prop="option" label="操作">
+            <el-table-column prop="option" label="操作"  v-if="user.roleId!==0">
                 <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="showUpdate(scope.row)">编辑</el-button>
                     <!--button包裹在气泡框当中-->
@@ -201,7 +201,8 @@
                 </el-form-item>
                 <el-form-item label="申请人" prop="username" >
                     <el-col :span="20">
-                        <el-input v-model="intoForm.username" @click.native="select"></el-input>
+                        <el-input v-model="intoForm.username" @click.native="select" v-if="user.roleId!==0"></el-input>
+                        <el-input v-model="intoForm.username" :readonly=true v-else-if="user.roleId===0" ></el-input>
                     </el-col>
                 </el-form-item>
                 <el-form-item label="货物数量" prop="count">
@@ -217,7 +218,8 @@
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="intoVisible = false">取 消</el-button>
-                <el-button type="primary" @click="Storage">确 定</el-button>
+                <el-button type="primary" @click="Storage" v-if="user.roleId!==0">确 定</el-button>
+                <el-button type="primary" v-else-if="user.roleId===0" @click="Apply">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -394,16 +396,32 @@ export default {
                 });
                 return;
             }
-            this.intoVisible=true
-            this.intoForm.id = this.currentRow.id
-            this.intoForm.name = this.currentRow.name
-            this.intoForm.storage = this.currentRow.storage
-            this.intoForm.goodstype = this.currentRow.goodstype
-            this.intoForm.count = ''
-            this.intoForm.username = ''
-            this.intoForm.adminid = this.user.id
-            this.intoForm.remark = this.currentRow.remark+"（入库）"
-            this.intoForm.manage = 1
+            if(this.user.roleId!==0){
+                this.intoVisible=true
+                this.intoForm.id = this.currentRow.id
+                this.intoForm.name = this.currentRow.name
+                this.intoForm.storage = this.currentRow.storage
+                this.intoForm.goodstype = this.currentRow.goodstype
+                this.intoForm.count = ''
+                this.intoForm.username = ''
+                this.intoForm.adminid = this.user.id
+                this.intoForm.remark = this.currentRow.remark
+                this.intoForm.manage = 1
+            }else {
+                this.intoVisible=true
+                this.intoForm.id = this.currentRow.id
+                this.intoForm.name = this.currentRow.name
+                this.intoForm.storage = this.currentRow.storage
+                this.intoForm.goodstype = this.currentRow.goodstype
+                this.intoForm.count = ''
+                this.intoForm.username = this.user.name
+                this.intoForm.userid = this.user.id
+                this.intoForm.adminid = ''
+                this.intoForm.remark = this.currentRow.remark
+                this.intoForm.manage = 1
+            }
+
+
         },
         //出库
         output(){
@@ -415,16 +433,30 @@ export default {
                 });
                 return;
             }
-            this.intoVisible=true
-            this.intoForm.id = this.currentRow.id
-            this.intoForm.name = this.currentRow.name
-            this.intoForm.storage = this.currentRow.storage
-            this.intoForm.goodstype = this.currentRow.goodstype
-            this.intoForm.count = ''
-            this.intoForm.username = ''
-            this.intoForm.adminid = this.user.id
-            this.intoForm.remark = this.currentRow.remark+"（出库）"
-            this.intoForm.manage = 2
+            if(this.user.roleId!==0){
+                this.intoVisible=true
+                this.intoForm.id = this.currentRow.id
+                this.intoForm.name = this.currentRow.name
+                this.intoForm.storage = this.currentRow.storage
+                this.intoForm.goodstype = this.currentRow.goodstype
+                this.intoForm.count = ''
+                this.intoForm.username = ''
+                this.intoForm.adminid = this.user.id
+                this.intoForm.remark = this.currentRow.remark
+                this.intoForm.manage = 2
+            }else {
+                this.intoVisible=true
+                this.intoForm.id = this.currentRow.id
+                this.intoForm.name = this.currentRow.name
+                this.intoForm.storage = this.currentRow.storage
+                this.intoForm.goodstype = this.currentRow.goodstype
+                this.intoForm.count = ''
+                this.intoForm.username = this.user.name
+                this.intoForm.userid = this.user.id
+                this.intoForm.adminid = ''
+                this.intoForm.remark = this.currentRow.remark
+                this.intoForm.manage = 2
+            }
         },
         //出入库方法
        Storage(){
@@ -464,6 +496,28 @@ export default {
                 }
             })
         },
+        //将申请发送给管理员
+        Apply(){
+          this.$axios.post(this.$http+'/apply/save',this.intoForm).then(res=>res.data).then(res=>{
+              if(res.code===200){
+                  this.$message({
+                      showClose: true,
+                      message: '成功( •̀ ω •́ )y',
+                      type: 'success'
+                  });
+                  this.intoVisible=false
+                  this.reset();
+              }
+              else {
+                  this.$message({
+                      showClose: true,
+                      message: '申请失败，究竟是哪里出了问题 (´･ω･`)?',
+                      type: 'error'
+                  });
+              }
+
+          })
+        },
         //重制查询框内容，并使页面返回初始状态
         reset(){
             this.name=''
@@ -473,6 +527,7 @@ export default {
             this.pageSize=5
             this.bool=true
             this.loadGet()
+            this.applyGet()
         },
         //编辑功能
         //1.展示当前列中的内容
@@ -647,7 +702,7 @@ export default {
                 //console.log(res)
                 if (res.code===200){
                     this.applyNum= res.total
-                    if (res.total>0){
+                    if (res.total>0&&this.user.roleId!==0){
                         this.isDot=true
                     }
                 }else {
@@ -655,9 +710,12 @@ export default {
                 }
             })
         },
-        openApply(){
-            this.applyVisible=true
-        },
+        //关闭申请界面并刷新本页面
+        applyClose(){
+            this.applyVisible=false
+            this.reset()
+        }
+
 
     },
     watch:{

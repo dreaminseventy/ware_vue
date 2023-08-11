@@ -43,6 +43,7 @@
                 <template slot-scope="scope">
                     <el-tag v-if="scope.row.manage === 1" type="warning" disable-transitions>入库</el-tag>
                     <el-tag v-else-if="scope.row.manage === 2" type="success" disable-transitions>出库</el-tag>
+                    <el-tag v-else-if="scope.row.manage === 3" type="danger" disable-transitions>驳回</el-tag>
                 </template>
             </el-table-column>
             <el-table-column prop="remark" label="备注">

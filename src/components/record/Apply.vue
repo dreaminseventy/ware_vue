@@ -48,10 +48,37 @@
             <el-table-column prop="option" label="操作">
                 <template slot-scope="scope">
                     <el-button size="small" type="primary" @click="passApply(scope.row)" >通过</el-button>
-                    <el-button slot="reference" size="small" type="danger" >驳回</el-button>
+                    <el-button slot="reference" size="small" type="danger" @click="unPass(scope.row)" >驳回</el-button>
                 </template>
             </el-table-column>
         </el-table>
+        <el-dialog
+            width="50%"
+            title="填写驳回原因"
+            :visible.sync="innerVisible"
+            append-to-body>
+            <el-form ref="intoForm" :model="intoForm" >
+                <el-form-item label="货物名" prop="name" >
+                    <el-col :span="20">
+                        <el-input v-model="intoForm.name" :readonly=true></el-input>
+                    </el-col>
+                </el-form-item>
+                <el-form-item label="数量" prop="count">
+                    <el-col :span="20">
+                        <el-input v-model="intoForm.count" :readonly=true></el-input>
+                    </el-col>
+                </el-form-item>
+                 <el-form-item label="备注" prop="remark">
+                    <el-col :span="20">
+                        <el-input type="textarea" v-model="intoForm.remark"></el-input>
+                    </el-col>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="innerVisible=false">取 消</el-button>
+                <el-button type="primary" @click="confirmUser">确 定</el-button>
+            </span>
+        </el-dialog>
         <!--分页-->
         <el-pagination
                 @size-change="handleSizeChange"
@@ -72,11 +99,13 @@
 import moment from "moment";
 
 export default {
-    name: "RecordManage",
+    name: "Apply",
+    components: {},
     data() {
         return {
             tableData: [],//查询的内容在这里展示
             bool:true,
+            innerVisible:false,
             user:JSON.parse(sessionStorage.getItem('User')),
             pageSize: 5,
             pageNum: 1,
@@ -230,16 +259,15 @@ export default {
         },
         //出入库方法
         passApply(row){
+
             this.intoForm.id = row.id
             this.intoForm.name = row.name
-            this.intoForm.storage = row.storage
-            this.intoForm.goodstype = row.goodstype
             this.intoForm.count = row.count
-            this.intoForm.userid = ''
+            this.intoForm.userid = row.userid
             this.intoForm.adminid = this.user.id
-            this.intoForm.remark = row.remark+"（出库）"
-
-            this.$axios.post(this.$http+'/goods/storage',this.intoForm).then(res=>res.data).then(res=>{
+            this.intoForm.manage = row.manage
+            this.intoForm.remark =row.remark
+            this.$axios.post(this.$http+'/goods/applystorage',this.intoForm).then(res=>res.data).then(res=>{
                 //console.log(res)
                 if (res.code===200){
                     this.$message({
@@ -249,13 +277,19 @@ export default {
                     });
                     this.$axios.post(this.$http+'/record/save',this.intoForm).then(res=>res.data).then(res=>{
                         if(res.code===200){
-                            this.$message({
-                                showClose: true,
-                                message: '记录添加成功( •̀ ω •́ )y',
-                                type: 'success'
-                            });
-                            this.intoVisible=false
-                            this.reset();
+                            this.$axios.delete(this.$http+'/apply/delete?id='+this.intoForm.id).then(res=>res.data).then(res=>{
+                                if (res.code===200){
+                                    this.intoVisible=false
+                                    this.reset();
+                                    }
+                                else {
+                                    this.$message({
+                                        showClose: true,
+                                        message: '出错了,请重试(´･ω･`)?',
+                                        type: 'error'
+                                    });
+                                }
+                                })
                         }
                         else{
                             this.$message({
@@ -274,7 +308,50 @@ export default {
                 }
             })
         },
+        //驳回申请
+        unPass(row){
+            this.innerVisible=true
+            this.intoForm.id = row.id
+            this.intoForm.name = row.name
+            this.intoForm.count = row.count
+            this.intoForm.userid = row.userid
+            this.intoForm.adminid = this.user.id
+            this.intoForm.manage = 3
+            this.intoForm.remark =row.remark
 
+        },
+        confirmUser(){
+            this.innerVisible=false
+            this.$axios.post(this.$http+'/record/save',this.intoForm).then(res=>res.data).then(res=>{
+                if(res.code===200){
+                    this.$axios.delete(this.$http+'/apply/delete?id='+this.intoForm.id).then(res=>res.data).then(res=>{
+                        if (res.code===200){
+                            this.$message({
+                                showClose: true,
+                                message: '驳回成功╰(￣ω￣ｏ)',
+                                type: 'success'
+                            });
+                            this.intoVisible=false
+                            this.reset();
+                        }
+                        else {
+                            this.$message({
+                                showClose: true,
+                                message: '出错了,请重试(´･ω･`)?',
+                                type: 'error'
+                            });
+                        }
+                    })
+                }
+                else{
+                    this.$message({
+                        showClose: true,
+                        message: '记录添加失败,请重试(´･ω･`)?',
+                        type: 'error'
+                    });
+                }
+            })
+        }
     },
     watch:{
         name(){
